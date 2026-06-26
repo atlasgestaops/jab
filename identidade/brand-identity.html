@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JAB — Identidade Visual & Sistema de Cores</title>
+  <meta name="description" content="Diretrizes oficiais de identidade visual da marca JAB (Portal de Vagas e Automação de Jovem Aprendiz). Paleta cromática calibrada, tipografia, gradientes e CSS design tokens.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       JAB BRAND IDENTITY — Stylesheet
+       ═══════════════════════════════════════════ */
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* ── Cores Primárias ── */
+      --color-primary: #48AD45; /* Verde Aprendiz */
+      --color-primary-rgb: 72, 173, 69;
+      --color-accent: #2965AE; /* Azul Carreira */
+      --color-accent-rgb: 41, 101, 174;
+      --color-highlight: #FABD14; /* Amarelo Dourado */
+      --color-highlight-rgb: 250, 189, 20;
+
+      /* ── Cores Secundárias ── */
+      --color-primary-dark: #337B31;
+      --color-primary-medium: #96CA94;
+      --color-accent-warm: #4985CB;
+      --color-accent-dark: #255B9D;
+
+      /* ── Tints & Shades ── */
+      --color-primary-ice: #F0F7F0;
+      --color-primary-mist: #DCECDC;
+      --color-accent-light: #EEF4FB;
+      --color-accent-peach: #D5E4F5;
+
+      /* ── Neutros ── */
+      --color-white: #FFFFFF;
+      --color-snow: #F5F5F7;
+      --color-gray-light: #E5E7EB;
+      --color-gray-medium: #9CA3AF;
+      --color-gray-text: #6B7280;
+      --color-dark: #1A1A2E;
+
+      /* ── Fontes ── */
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--color-snow);
+      color: var(--color-dark);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── CONTAINER ──────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 4vw, 2.5rem);
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--color-gray-light);
+      margin: 0;
+    }
+
+    section {
+      padding: clamp(3rem, 7vw, 6rem) 0;
+    }
+
+    /* ── NAV ────────────────────────────────── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px) saturate(1.6);
+      -webkit-backdrop-filter: blur(20px) saturate(1.6);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      transition: box-shadow 0.3s ease;
+    }
+    .nav.scrolled {
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 4vw, 2rem);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--color-accent);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-brand .symbol {
+      color: var(--color-primary);
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+    .nav-brand span.highlight {
+      color: var(--color-highlight);
+    }
+    .nav-links {
+      display: flex;
+      gap: 0.2rem;
+      list-style: none;
+      overflow-x: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--color-gray-text);
+      text-decoration: none;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .nav-links a:hover {
+      color: var(--color-primary);
+      background: var(--color-primary-ice);
+    }
+    .nav-links a.active {
+      color: var(--color-primary-dark);
+      background: var(--color-primary-mist);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1024px) {
+      .nav-links { display: none; }
+    }
+
+    /* ── HERO ───────────────────────────────── */
+    .hero {
+      margin-top: 68px;
+      background: linear-gradient(135deg, #337B31 0%, #1e4d1c 40%, #172d54 100%);
+      padding: clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 2rem);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 80%;
+      height: 200%;
+      background: radial-gradient(ellipse, rgba(250, 189, 20, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -40%;
+      left: -20%;
+      width: 60%;
+      height: 150%;
+      background: radial-gradient(ellipse, rgba(41, 101, 174, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(8px);
+    }
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 span.green {
+      color: #71dc6e;
+    }
+    .hero h1 span.yellow {
+      color: #ffda6a;
+    }
+    .hero p {
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 640px;
+      margin: 0 auto 3rem auto;
+      line-height: 1.55;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: clamp(1rem, 4vw, 3rem);
+      flex-wrap: wrap;
+    }
+    .hero-meta-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.85rem 1.5rem;
+      border-radius: 12px;
+      min-width: 120px;
+    }
+    .hero-meta-item .value {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .hero-meta-item .label {
+      font-size: 0.68rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.2rem;
+    }
+
+    /* ── SECTION HEADERS ────────────────────── */
+    .section-header {
+      margin-bottom: 3rem;
+      max-width: 680px;
+    }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      color: var(--color-dark);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: var(--color-gray-text);
+      line-height: 1.5;
+    }
+
+    /* ── COLOR GRIDS ────────────────────────── */
+    .color-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .color-grid--2 {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .color-grid--3 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .color-grid--4 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .color-grid--6 {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    /* ── SWATCHES ───────────────────────────── */
+    .swatch {
+      background: var(--color-white);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .swatch:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(26, 26, 46, 0.08);
+    }
+    .swatch:active {
+      transform: scale(0.98) translateY(-2px);
+    }
+    .swatch-color {
+      height: 130px;
+      width: 100%;
+      position: relative;
+      transition: filter 0.2s ease;
+    }
+    .swatch:hover .swatch-color {
+      filter: brightness(1.02);
+    }
+    .swatch-info {
+      padding: 1.2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .swatch-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--color-dark);
+      margin-bottom: 0.15rem;
+    }
+    .swatch-hex {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-gray-text);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .swatch-meta {
+      font-size: 0.68rem;
+      color: var(--color-gray-text);
+      line-height: 1.45;
+      margin-top: auto;
+    }
+    .swatch-tag {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      margin-top: 0.6rem;
+    }
+    .swatch-tag--primary { background: #E2F3E1; color: var(--color-primary-dark); }
+    .swatch-tag--accent { background: #E2EDFA; color: var(--color-accent-dark); }
+    .swatch-tag--highlight { background: #FFF7DF; color: #9A7200; }
+    .swatch-tag--comp { background: #F3E2F2; color: #8F2B8D; }
+
+    /* Toast notification inside swatch */
+    .swatch-copy-toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(26, 26, 46, 0.95);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      letter-spacing: 0.02em;
+    }
+    .swatch.copied .swatch-copy-toast {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .swatch--primary .swatch-color {
+      height: 160px;
+    }
+    .swatch--small .swatch-color {
+      height: 70px;
+    }
+    .swatch--small .swatch-info {
+      padding: 0.75rem 0.9rem;
+    }
+    .swatch--small .swatch-name {
+      font-size: 0.85rem;
+    }
+    .swatch--small .swatch-hex {
+      font-size: 0.72rem;
+      margin-bottom: 0;
+    }
+
+    /* ── PROPORTION BAR ────────────────────── */
+    .proportion-container {
+      margin-top: 2rem;
+    }
+    .proportion-bar {
+      display: flex;
+      height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 0.85rem;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: var(--shadow-sm);
+    }
+    .proportion-segment {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      transition: flex 0.5s ease;
+    }
+    .proportion-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--color-gray-text);
+      font-weight: 500;
+    }
+
+    /* ── SUBSECTIONS ────────────────────────── */
+    .subsection {
+      margin-top: 3.5rem;
+      border-top: 1px dashed var(--color-gray-light);
+      padding-top: 2.5rem;
+    }
+    .subsection:first-of-type {
+      margin-top: 0;
+      border-top: none;
+      padding-top: 0;
+    }
+    .subsection-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      margin-bottom: 0.35rem;
+    }
+    .subsection-desc {
+      font-size: 0.82rem;
+      color: var(--color-gray-text);
+      margin-bottom: 1.5rem;
+      line-height: 1.45;
+    }
+
+    /* ── SEMANTIC BADGES ────────────────────── */
+    .semantic-card {
+      background: var(--color-white);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .semantic-color-split {
+      display: flex;
+      height: 90px;
+    }
+    .semantic-half {
+      flex: 1;
+      position: relative;
+    }
+    .semantic-label-value {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .semantic-half--light .semantic-label-value {
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--color-dark);
+    }
+    .semantic-info {
+      padding: 1rem;
+    }
+    .semantic-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--color-dark);
+      margin-bottom: 0.2rem;
+    }
+    .semantic-desc {
+      font-size: 0.72rem;
+      color: var(--color-gray-text);
+      line-height: 1.4;
+    }
+
+    /* ── GRADIENTS ──────────────────────────── */
+    .gradient-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .gradient-card {
+      background: var(--color-white);
+      border: 1px solid rgba(0,0,0,0.05);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .gradient-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(26, 26, 46, 0.08);
+    }
+    .gradient-preview {
+      height: 140px;
+      position: relative;
+    }
+    .gradient-copy-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 26, 46, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .gradient-card:hover .gradient-copy-overlay {
+      opacity: 1;
+    }
+    .gradient-copy-btn {
+      background: #fff;
+      border: none;
+      color: var(--color-dark);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--font-display);
+    }
+    .gradient-info {
+      padding: 1.2rem;
+    }
+    .gradient-card-name {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--color-dark);
+      margin-bottom: 0.3rem;
+    }
+    .gradient-code {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--color-gray-text);
+      background: var(--color-snow);
+      padding: 0.45rem;
+      border-radius: 6px;
+      border: 1px solid var(--color-gray-light);
+      word-break: break-all;
+    }
+
+    /* ── TYPOGRAPHY SPECIMEN ────────────────── */
+    .specimen-card {
+      background: var(--color-white);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 14px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .specimen-header {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-gray-light);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .specimen-font-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+    .specimen-font-meta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--color-gray-text);
+    }
+    .specimen-alphabet {
+      font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+      word-break: break-all;
+    }
+    .specimen-alphabet--body {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+    }
+    .specimen-pangram {
+      font-size: 0.85rem;
+      color: var(--color-gray-text);
+    }
+
+    /* Typography Scale Table */
+    .typo-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--color-white);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .typo-table th {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-gray-text);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: left;
+      padding: 0.85rem 1.25rem;
+      background: var(--color-snow);
+      border-bottom: 1px solid var(--color-gray-light);
+    }
+    .typo-table td {
+      padding: 0.9rem 1.25rem;
+      font-size: 0.8rem;
+      border-bottom: 1px solid var(--color-gray-light);
+      vertical-align: middle;
+    }
+    .typo-table tr:last-child td { border-bottom: none; }
+    .typo-preview-text {
+      font-family: var(--font-display);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* ── ACESSIBILIDADE WCAG TABLE ──────────── */
+    .guide-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--color-white);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .guide-table th {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-gray-text);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: left;
+      padding: 0.85rem 1.25rem;
+      background: var(--color-snow);
+      border-bottom: 1px solid var(--color-gray-light);
+    }
+    .guide-table td {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.82rem;
+      border-bottom: 1px solid var(--color-gray-light);
+      vertical-align: middle;
+    }
+    .guide-table tr:last-child td { border-bottom: none; }
+    .accessibility-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .accessibility-badge--pass { background: #D1FAE5; color: #065F46; }
+    .accessibility-badge--fail { background: #FEE2E2; color: #991B1B; }
+    .accessibility-badge--conditional { background: #FEF3C7; color: #92400E; }
+
+    .color-dot {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      vertical-align: middle;
+      margin-right: 0.4rem;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* ── COMBINATION CARDS ─────────────────── */
+    .combo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1.25rem;
+    }
+    .combo-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .combo-card:hover { transform: translateY(-2px); }
+    .combo-preview {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .combo-label {
+      padding: 0.7rem 0.9rem;
+      background: #fff;
+      font-size: 0.68rem;
+      color: var(--color-gray-text);
+      line-height: 1.45;
+    }
+
+    /* ── SPACING VISUAL ────────────────────── */
+    .spacing-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .spacing-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .spacing-token {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--color-primary-dark);
+      min-width: 110px;
+      flex-shrink: 0;
+    }
+    .spacing-bar-wrap {
+      flex: 1;
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+    .spacing-bar {
+      height: 100%;
+      background: linear-gradient(135deg, var(--color-primary-ice) 0%, var(--color-primary-mist) 100%);
+      border-radius: 6px;
+      border: 1px solid rgba(72,173,69,0.12);
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .spacing-value {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--color-gray-medium);
+      min-width: 65px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── SHADOW CARDS ──────────────────────── */
+    .shadow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .shadow-card {
+      background: #fff;
+      border-radius: 14px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: transform 0.3s ease;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .shadow-card:hover { transform: translateY(-2px); }
+    .shadow-card-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--color-gray-text);
+    }
+
+    /* ── TOKEN CODE BLOCK ──────────────────── */
+    .code-block {
+      background: #1A1A2E;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .code-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .code-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .code-dots span:nth-child(1) { background: #FF5F56; }
+    .code-dots span:nth-child(2) { background: #FFBD2E; }
+    .code-dots span:nth-child(3) { background: #27C93F; }
+    .code-filename {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.45);
+    }
+    .code-copy-btn {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .code-copy-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.8);
+    }
+    .code-body {
+      padding: 1.5rem 1.25rem;
+      overflow-x: auto;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .code-body pre {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.7);
+      white-space: pre;
+      tab-size: 2;
+    }
+    .code-body .comment { color: rgba(255,255,255,0.28); }
+    .code-body .prop { color: #84cc16; }
+    .code-body .val { color: #FABD14; }
+    .code-body .selector { color: #3b82f6; }
+    .code-body .bracket { color: rgba(255,255,255,0.4); }
+
+    /* ── ALERT BOX ─────────────────────────── */
+    .alert {
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .alert-icon {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .alert--info {
+      background: var(--color-primary-ice);
+      border: 1px solid rgba(72,173,69,0.15);
+      color: var(--color-primary-dark);
+    }
+    .alert--warning {
+      background: #FEF3C7;
+      border: 1px solid rgba(217,119,6,0.2);
+      color: #92400E;
+    }
+    .alert--accent {
+      background: var(--color-accent-light);
+      border: 1px solid rgba(41,101,174,0.12);
+      color: var(--color-accent-dark);
+    }
+
+    /* ── FOOTER ─────────────────────────────── */
+    .footer {
+      background: var(--color-dark);
+      color: rgba(255, 255, 255, 0.45);
+      padding: 4rem clamp(1rem, 4vw, 2rem) 3rem clamp(1rem, 4vw, 2rem);
+      text-align: center;
+    }
+    .footer-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .footer-brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.6rem;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+    .footer-brand span { color: var(--color-primary); }
+    .footer-brand span.highlight { color: var(--color-highlight); }
+    .footer p {
+      font-size: 0.8rem;
+      line-height: 1.65;
+      margin-bottom: 2rem;
+    }
+    .footer-line {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin: 2rem 0;
+    }
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ── ANIMATIONS ─────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── PRINT ──────────────────────────────── */
+    @media print {
+      .nav { display: none; }
+      .hero { margin-top: 0; padding: 2rem; color: #000; background: #fff; }
+      section { padding: 1.5rem 0; }
+      .swatch:hover { transform: none; box-shadow: none; }
+      .fade-in { opacity: 1; transform: none; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#top" class="nav-brand">
+        <span class="symbol">&#9679;</span> JAB<span class="highlight">.</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#primarias">Primárias</a></li>
+        <li><a href="#secundarias">Secundárias</a></li>
+        <li><a href="#suporte">Suporte</a></li>
+        <li><a href="#complementares">Complementares</a></li>
+        <li><a href="#neutras">Neutras</a></li>
+        <li><a href="#semanticas">Semânticas</a></li>
+        <li><a href="#gradientes">Gradientes</a></li>
+        <li><a href="#tipografia">Tipografia</a></li>
+        <li><a href="#acessibilidade">Acessibilidade</a></li>
+        <li><a href="#combinacoes">Combinações</a></li>
+        <li><a href="#espacamentos">Espaçamentos</a></li>
+        <li><a href="#tokens">Tokens CSS</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <header class="hero" id="top">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Documento Oficial — v1.0
+      </div>
+      <h1>Identidade Visual<br>& Sistema de <span class="green">Cores</span> <span class="yellow">JAB</span></h1>
+      <p>Especificações e padrões cromáticos para o JAB (Portal de Vagas e Automação de Jovem Aprendiz). Paleta de cores, tipografia, gradientes, acessibilidade e design tokens para todas as aplicações.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <div class="value">38</div>
+          <div class="label">Cores Calculadas</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="value">5</div>
+          <div class="label">Gradientes</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="value">3</div>
+          <div class="label">Fontes</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="value">LOCAL</div>
+          <div class="label">Ambiente</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ SECTION: CORES PRIMÁRIAS ═══ -->
+  <section id="primarias">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.2 — Cores Primárias</div>
+        <div class="section-title">As Cores Fundacionais</div>
+        <div class="section-subtitle">Retiradas e calibradas diretamente do logotipo original. Moldam a identidade e transmitem o crescimento do jovem no mercado brasileiro.</div>
+      </div>
+
+      <div class="color-grid color-grid--3 fade-in">
+        <!-- Verde Aprendiz -->
+        <div class="swatch swatch--primary" onclick="copyHex(this, '#48AD45')">
+          <div class="swatch-color" style="background: #48AD45;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Verde Aprendiz</div>
+            <div class="swatch-hex">#48AD45</div>
+            <div class="swatch-meta">RGB 72, 173, 69 · HSL 118°, 43%, 47%</div>
+            <span class="swatch-tag swatch-tag--primary">Dominante — 60%</span>
+          </div>
+        </div>
+
+        <!-- Azul Carreira -->
+        <div class="swatch swatch--primary" onclick="copyHex(this, '#2965AE')">
+          <div class="swatch-color" style="background: #2965AE;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Azul Carreira</div>
+            <div class="swatch-hex">#2965AE</div>
+            <div class="swatch-meta">RGB 41, 101, 174 · HSL 213°, 62%, 42%</div>
+            <span class="swatch-tag swatch-tag--accent">Destaque — 25%</span>
+          </div>
+        </div>
+
+        <!-- Amarelo Dourado -->
+        <div class="swatch swatch--primary" onclick="copyHex(this, '#FABD14')">
+          <div class="swatch-color" style="background: #FABD14;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Dourado Oportunidade</div>
+            <div class="swatch-hex">#FABD14</div>
+            <div class="swatch-meta">RGB 250, 189, 20 · HSL 44°, 96%, 53%</div>
+            <span class="swatch-tag swatch-tag--highlight">Ação/Alerta — 15%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-in proportion-container">
+        <div class="proportion-bar">
+          <div class="proportion-segment" style="flex: 60; background: #48AD45;">60%</div>
+          <div class="proportion-segment" style="flex: 25; background: #2965AE;">25%</div>
+          <div class="proportion-segment" style="flex: 15; background: #FABD14; color: #1A1A2E;">15%</div>
+        </div>
+        <div class="proportion-labels">
+          <span>Verde Aprendiz — Estrutural</span>
+          <span>Azul Carreira — Confiança</span>
+          <span>Dourado Oportunidade — Ação</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: CORES SECUNDÁRIAS ═══ -->
+  <section id="secundarias">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.3 — Cores Secundárias</div>
+        <div class="section-title">Profundidade & Variações</div>
+        <div class="section-subtitle">Derivadas matematicamente das cores primárias para hovers, estados ativos e hierarquização visual.</div>
+      </div>
+
+      <div class="color-grid color-grid--4 fade-in">
+        <!-- Verde Floresta -->
+        <div class="swatch" onclick="copyHex(this, '#337B31')">
+          <div class="swatch-color" style="background: #337B31;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Verde Floresta</div>
+            <div class="swatch-hex">#337B31</div>
+            <div class="swatch-meta">Verde L -11%<br>Hovers, botões ativos, texto verde</div>
+          </div>
+        </div>
+
+        <!-- Verde Broto -->
+        <div class="swatch" onclick="copyHex(this, '#96CA94')">
+          <div class="swatch-color" style="background: #96CA94;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Verde Broto</div>
+            <div class="swatch-hex">#96CA94</div>
+            <div class="swatch-meta">Verde L +19%, S -22%<br>Bordas, ícones, divisórias</div>
+          </div>
+        </div>
+
+        <!-- Azul Royal -->
+        <div class="swatch" onclick="copyHex(this, '#4985CB')">
+          <div class="swatch-color" style="background: #4985CB;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Azul Royal</div>
+            <div class="swatch-hex">#4985CB</div>
+            <div class="swatch-meta">Azul L +11%<br>Links ativos, ícones de menu</div>
+          </div>
+        </div>
+
+        <!-- Azul Marinho -->
+        <div class="swatch" onclick="copyHex(this, '#255B9D')">
+          <div class="swatch-color" style="background: #255B9D;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Azul Marinho</div>
+            <div class="swatch-hex">#255B9D</div>
+            <div class="swatch-meta">Azul L -4%<br>Hovers, cabeçalhos, rodapé</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: TINTS & SHADES ═══ -->
+  <section id="suporte">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.4 — Cores de Suporte</div>
+        <div class="section-title">Tints & Shades</div>
+        <div class="section-subtitle">Tons pastéis muito claros, ideais para fundos de seções de formulários ou delimitações de cards de vaga sem agredir a legibilidade.</div>
+      </div>
+
+      <div class="color-grid color-grid--4 fade-in">
+        <!-- Menta Gelo -->
+        <div class="swatch" onclick="copyHex(this, '#F0F7F0')">
+          <div class="swatch-color" style="background: #F0F7F0;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Menta Gelo</div>
+            <div class="swatch-hex">#F0F7F0</div>
+            <div class="swatch-meta">Verde Tint 95%<br>Fundos de seções e moderação</div>
+          </div>
+        </div>
+
+        <!-- Menta Suave -->
+        <div class="swatch" onclick="copyHex(this, '#DCECDC')">
+          <div class="swatch-color" style="background: #DCECDC;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Menta Suave</div>
+            <div class="swatch-hex">#DCECDC</div>
+            <div class="swatch-meta">Verde Tint 88%<br>Tabelas zebradas, divisores</div>
+          </div>
+        </div>
+
+        <!-- Azul Celeste -->
+        <div class="swatch" onclick="copyHex(this, '#EEF4FB')">
+          <div class="swatch-color" style="background: #EEF4FB;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Azul Celeste</div>
+            <div class="swatch-hex">#EEF4FB</div>
+            <div class="swatch-meta">Azul Tint 96%<br>Cards de vagas destacadas</div>
+          </div>
+        </div>
+
+        <!-- Azul Névoa -->
+        <div class="swatch" onclick="copyHex(this, '#D5E4F5')">
+          <div class="swatch-color" style="background: #D5E4F5;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Azul Névoa</div>
+            <div class="swatch-hex">#D5E4F5</div>
+            <div class="swatch-meta">Azul Tint 90%<br>Bordas de vaga ativa, campos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: CORES COMPLEMENTARES ═══ -->
+  <section id="complementares" style="background: var(--color-white);">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.5 — Cores Complementares</div>
+        <div class="section-title">Harmonias & Paleta Estendida</div>
+        <div class="section-subtitle">Tons derivados a partir da roda cromática. Permitem construir materiais promocionais, categorias e campanhas mantendo a coerência estética de forma científica.</div>
+      </div>
+
+      <!-- Complementares Diretas -->
+      <div class="subsection fade-in">
+        <div class="subsection-title">Complementares Diretas (180°)</div>
+        <div class="subsection-desc">Máximo contraste e contraste dinâmico.</div>
+        <div class="color-grid color-grid--2">
+          <div class="swatch" onclick="copyHex(this, '#A845A6')">
+            <div class="swatch-color" style="background: #A845A6;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Magenta JAB</div>
+              <div class="swatch-hex">#A845A6</div>
+              <div class="swatch-meta">Complementar do Verde (118° + 180° = 298°)<br>Campanhas exclusivas e rompimento do verde</div>
+              <span class="swatch-tag swatch-tag--comp">Complementar A</span>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#AE7229')">
+            <div class="swatch-color" style="background: #AE7229;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Bronze Carreira</div>
+              <div class="swatch-hex">#AE7229</div>
+              <div class="swatch-meta">Complementar do Azul (213° - 180° = 33°)<br>Credenciais de prestígio, selos de tradição</div>
+              <span class="swatch-tag swatch-tag--comp">Complementar B</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split-Complementary -->
+      <div class="subsection fade-in">
+        <div class="subsection-title">Split-Complementary (±30°)</div>
+        <div class="subsection-desc">Sofisticação de contraste com menor agressividade óptica.</div>
+        <div class="color-grid color-grid--4">
+          <div class="swatch" onclick="copyHex(this, '#8245A8')">
+            <div class="swatch-color" style="background: #8245A8;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Violeta Profundo</div>
+              <div class="swatch-hex">#8245A8</div>
+              <div class="swatch-meta">Split 1 de A (275°)<br>Destaques corporativos premium</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#A84589')">
+            <div class="swatch-color" style="background: #A84589;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Rosa Orquídea</div>
+              <div class="swatch-hex">#A84589</div>
+              <div class="swatch-meta">Split 2 de A (321°)<br>Ações de impacto social</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#AE7029')">
+            <div class="swatch-color" style="background: #AE7029;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Laranja Argila</div>
+              <div class="swatch-hex">#AE7029</div>
+              <div class="swatch-meta">Split 1 de B (32°)<br>Tags de cursos de capacitação</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#75AE29')">
+            <div class="swatch-color" style="background: #75AE29;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Verde Oliva</div>
+              <div class="swatch-hex">#75AE29</div>
+              <div class="swatch-meta">Split 2 de B (98°)<br>Áreas agrícolas e jovem do campo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Triádica -->
+      <div class="subsection fade-in">
+        <div class="subsection-title">Harmonia Triádica (120°)</div>
+        <div class="subsection-desc">Esquema tricolor equidistante na roda cromática, proporcionando alta energia visual.</div>
+        <div class="color-grid color-grid--4">
+          <div class="swatch" onclick="copyHex(this, '#454EA8')">
+            <div class="swatch-color" style="background: #454EA8;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Azul Ultramarino</div>
+              <div class="swatch-hex">#454EA8</div>
+              <div class="swatch-meta">Triádica 1 de A (238°)<br>Seções complexas e infográficos</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#A84547')">
+            <div class="swatch-color" style="background: #A84547;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Vermelho Coral</div>
+              <div class="swatch-hex">#A84547</div>
+              <div class="swatch-meta">Triádica 2 de A (358°)<br>Mensagens de recusa e alertas</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#AE2965')">
+            <div class="swatch-color" style="background: #AE2965;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Fúcsia Escuro</div>
+              <div class="swatch-hex">#AE2965</div>
+              <div class="swatch-meta">Triádica 1 de B (333°)<br>Campanhas institucionais alternativas</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#72AE29')">
+            <div class="swatch-color" style="background: #72AE29;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Verde Maçã</div>
+              <div class="swatch-hex">#72AE29</div>
+              <div class="swatch-meta">Triádica 2 de B (93°)<br>Ações estudantis e dinâmicas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Análogas -->
+      <div class="subsection fade-in">
+        <div class="subsection-title">Harmonia Análoga</div>
+        <div class="subsection-desc">Cores adjacentes no círculo cromático, gerando transições suaves, naturais e orgânicas.</div>
+        <div class="color-grid color-grid--4">
+          <div class="swatch" onclick="copyHex(this, '#59A845')">
+            <div class="swatch-color" style="background: #59A845;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Verde Amarelado</div>
+              <div class="swatch-hex">#59A845</div>
+              <div class="swatch-meta">Análoga Esq. de A (105°)<br>Gradientes suaves e ícones de suporte</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#45A869')">
+            <div class="swatch-color" style="background: #45A869;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Verde Esmeralda</div>
+              <div class="swatch-hex">#45A869</div>
+              <div class="swatch-meta">Análoga Dir. de A (134°)<br>Elementos ecológicos e hovers</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#29AEAE')">
+            <div class="swatch-color" style="background: #29AEAE;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Ciano Turquesa</div>
+              <div class="swatch-hex">#29AEAE</div>
+              <div class="swatch-meta">Análoga Esq. de B (180°)<br>Banners modernos e frescor visual</div>
+            </div>
+          </div>
+          <div class="swatch" onclick="copyHex(this, '#2947AE')">
+            <div class="swatch-color" style="background: #2947AE;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Azul Cobalto</div>
+              <div class="swatch-hex">#2947AE</div>
+              <div class="swatch-meta">Análoga Dir. de B (228°)<br>Hovers, cabeçalhos secundários</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tints das Complementares -->
+      <div class="subsection fade-in">
+        <div class="subsection-title">Tints das Complementares (Suaves)</div>
+        <div class="subsection-desc">Backgrounds temáticos muito leves para postagens e landing pages de nicho.</div>
+        <div class="color-grid color-grid--6">
+          <div class="swatch swatch--small" onclick="copyHex(this, '#F7EEF6')">
+            <div class="swatch-color" style="background: #F7EEF6;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Rosa Algodão</div>
+              <div class="swatch-hex">#F7EEF6</div>
+            </div>
+          </div>
+          <div class="swatch swatch--small" onclick="copyHex(this, '#F7F2EE')">
+            <div class="swatch-color" style="background: #F7F2EE;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Areia Quente</div>
+              <div class="swatch-hex">#F7F2EE</div>
+            </div>
+          </div>
+          <div class="swatch swatch--small" onclick="copyHex(this, '#F2EEF7')">
+            <div class="swatch-color" style="background: #F2EEF7;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Lilás Orvalho</div>
+              <div class="swatch-hex">#F2EEF7</div>
+            </div>
+          </div>
+          <div class="swatch swatch--small" onclick="copyHex(this, '#F7EEF3')">
+            <div class="swatch-color" style="background: #F7EEF3;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Cereja Suave</div>
+              <div class="swatch-hex">#F7EEF3</div>
+            </div>
+          </div>
+          <div class="swatch swatch--small" onclick="copyHex(this, '#EEF7F7')">
+            <div class="swatch-color" style="background: #EEF7F7;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Menta Gelada</div>
+              <div class="swatch-hex">#EEF7F7</div>
+            </div>
+          </div>
+          <div class="swatch swatch--small" onclick="copyHex(this, '#EEEFF7')">
+            <div class="swatch-color" style="background: #EEEFF7;">
+              <div class="swatch-copy-toast">Copiado!</div>
+            </div>
+            <div class="swatch-info">
+              <div class="swatch-name">Azul Suave</div>
+              <div class="swatch-hex">#EEEFF7</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guia Rápido -->
+      <div class="subsection fade-in">
+        <div class="subsection-title">Guia Rápido: Quando Usar</div>
+        <div class="subsection-desc">Mapeamento direto e completo de todas as 40 tonalidades da paleta para situações de interface recomendadas no JAB.</div>
+        <table class="guide-table">
+          <thead>
+            <tr>
+              <th>Situação da Interface</th>
+              <th>Cor Recomendada</th>
+              <th>Hex</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Botão principal de candidatura a vagas</td>
+              <td><span class="color-dot" style="background:#48AD45;"></span>Verde Aprendiz</td>
+              <td><span class="hex-code">#48AD45</span></td>
+            </tr>
+            <tr>
+              <td>Cabeçalho principal (Navbar), menus de navegação do Portal</td>
+              <td><span class="color-dot" style="background:#2965AE;"></span>Azul Carreira</td>
+              <td><span class="hex-code">#2965AE</span></td>
+            </tr>
+            <tr>
+              <td>Badge de destaque de "Nova Vaga" ou "Urgente"</td>
+              <td><span class="color-dot" style="background:#FABD14;"></span>Dourado Oportunidade</td>
+              <td><span class="hex-code">#FABD14</span></td>
+            </tr>
+            <tr>
+              <td>Hover do botão principal de candidatura</td>
+              <td><span class="color-dot" style="background:#337B31;"></span>Verde Floresta</td>
+              <td><span class="hex-code">#337B31</span></td>
+            </tr>
+            <tr>
+              <td>Bordas e divisores de seções informativas do jovem</td>
+              <td><span class="color-dot" style="background:#96CA94;"></span>Verde Broto</td>
+              <td><span class="hex-code">#96CA94</span></td>
+            </tr>
+            <tr>
+              <td>Links de hipertexto e tags de filtro selecionadas</td>
+              <td><span class="color-dot" style="background:#4985CB;"></span>Azul Royal</td>
+              <td><span class="hex-code">#4985CB</span></td>
+            </tr>
+            <tr>
+              <td>Hovers do cabeçalho corporativo e botões estruturais</td>
+              <td><span class="color-dot" style="background:#255B9D;"></span>Azul Marinho</td>
+              <td><span class="hex-code">#255B9D</span></td>
+            </tr>
+            <tr>
+              <td>Fundo da área de descrição detalhada da vaga</td>
+              <td><span class="color-dot" style="background:#F0F7F0;"></span>Menta Gelo</td>
+              <td><span class="hex-code">#F0F7F0</span></td>
+            </tr>
+            <tr>
+              <td>Fundo zebrado em tabelas do painel administrativo</td>
+              <td><span class="color-dot" style="background:#DCECDC;"></span>Menta Suave</td>
+              <td><span class="hex-code">#DCECDC</span></td>
+            </tr>
+            <tr>
+              <td>Fundo dos cards de vaga em destaque na busca</td>
+              <td><span class="color-dot" style="background:#EEF4FB;"></span>Azul Celeste</td>
+              <td><span class="hex-code">#EEF4FB</span></td>
+            </tr>
+            <tr>
+              <td>Bordas de cards de vagas selecionadas / focadas</td>
+              <td><span class="color-dot" style="background:#D5E4F5;"></span>Azul Névoa</td>
+              <td><span class="hex-code">#D5E4F5</span></td>
+            </tr>
+            <tr>
+              <td>Badge de aviso "Golpe Detectado" ou "Alerta de Fraude"</td>
+              <td><span class="color-dot" style="background:#A845A6;"></span>Magenta JAB</td>
+              <td><span class="hex-code">#A845A6</span></td>
+            </tr>
+            <tr>
+              <td>Selos de certificação de parcerias com o Governo Federal</td>
+              <td><span class="color-dot" style="background:#AE7229;"></span>Bronze Carreira</td>
+              <td><span class="hex-code">#AE7229</span></td>
+            </tr>
+            <tr>
+              <td>Badge de Grandes Empresas / Multinacionais</td>
+              <td><span class="color-dot" style="background:#8245A8;"></span>Violeta Profundo</td>
+              <td><span class="hex-code">#8245A8</span></td>
+            </tr>
+            <tr>
+              <td>Categoria de Ações Afirmativas e igualdade de gênero</td>
+              <td><span class="color-dot" style="background:#A84589;"></span>Rosa Orquídea</td>
+              <td><span class="hex-code">#A84589</span></td>
+            </tr>
+            <tr>
+              <td>Categoria de Capacitação Profissional / Cursos Gratuitos</td>
+              <td><span class="color-dot" style="background:#AE7029;"></span>Laranja Argila</td>
+              <td><span class="hex-code">#AE7029</span></td>
+            </tr>
+            <tr>
+              <td>Categoria de vagas no setor do Agronegócio / Campo</td>
+              <td><span class="color-dot" style="background:#75AE29;"></span>Verde Oliva</td>
+              <td><span class="hex-code">#75AE29</span></td>
+            </tr>
+            <tr>
+              <td>Divisores e destaques em painéis estatísticos (Dashboard)</td>
+              <td><span class="color-dot" style="background:#454EA8;"></span>Azul Ultramarino</td>
+              <td><span class="hex-code">#454EA8</span></td>
+            </tr>
+            <tr>
+              <td>Botão de recusa de vaga pendente (Triagem do Administrador)</td>
+              <td><span class="color-dot" style="background:#A84547;"></span>Vermelho Coral</td>
+              <td><span class="hex-code">#A84547</span></td>
+            </tr>
+            <tr>
+              <td>Badge de sinalização de "Vagas com Acessibilidade / PcD"</td>
+              <td><span class="color-dot" style="background:#AE2965;"></span>Fúcsia Escuro</td>
+              <td><span class="hex-code">#AE2965</span></td>
+            </tr>
+            <tr>
+              <td>Tags de benefícios corporativos (Gympass, VT, Plano)</td>
+              <td><span class="color-dot" style="background:#72AE29;"></span>Verde Maçã</td>
+              <td><span class="hex-code">#72AE29</span></td>
+            </tr>
+            <tr>
+              <td>Gráficos de progresso do preenchimento de perfil do jovem</td>
+              <td><span class="color-dot" style="background:#59A845;"></span>Verde Amarelado</td>
+              <td><span class="hex-code">#59A845</span></td>
+            </tr>
+            <tr>
+              <td>Botão secundário de "Salvar vaga para ler depois"</td>
+              <td><span class="color-dot" style="background:#45A869;"></span>Verde Esmeralda</td>
+              <td><span class="hex-code">#45A869</span></td>
+            </tr>
+            <tr>
+              <td>Badge indicador de vagas "100% Home Office / Híbrida"</td>
+              <td><span class="color-dot" style="background:#29AEAE;"></span>Ciano Turquesa</td>
+              <td><span class="hex-code">#29AEAE</span></td>
+            </tr>
+            <tr>
+              <td>Botões de ações administrativas secundárias (exportações)</td>
+              <td><span class="color-dot" style="background:#2947AE;"></span>Azul Cobalto</td>
+              <td><span class="hex-code">#2947AE</span></td>
+            </tr>
+            <tr>
+              <td>Banner informativo de suporte emocional / saúde mental</td>
+              <td><span class="color-dot" style="background:#F7EEF6;"></span>Rosa Algodão</td>
+              <td><span class="hex-code">#F7EEF6</span></td>
+            </tr>
+            <tr>
+              <td>Fundo dos blocos de depoimentos de jovens contratados</td>
+              <td><span class="color-dot" style="background:#F7F2EE;"></span>Areia Quente</td>
+              <td><span class="hex-code">#F7F2EE</span></td>
+            </tr>
+            <tr>
+              <td>Fundo de banners explicativos da Lei da Aprendizagem</td>
+              <td><span class="color-dot" style="background:#F2EEF7;"></span>Lilás Orvalho</td>
+              <td><span class="hex-code">#F2EEF7</span></td>
+            </tr>
+            <tr>
+              <td>Fundo de banners informativos sobre eventos/comemorações</td>
+              <td><span class="color-dot" style="background:#F7EEF3;"></span>Cereja Suave</td>
+              <td><span class="hex-code">#F7EEF3</span></td>
+            </tr>
+            <tr>
+              <td>Caixa de dicas rápidas para formatação de currículo</td>
+              <td><span class="color-dot" style="background:#EEF7F7;"></span>Menta Gelada</td>
+              <td><span class="hex-code">#EEF7F7</span></td>
+            </tr>
+            <tr>
+              <td>Fundo de caixas de entrada de dados de busca avançada</td>
+              <td><span class="color-dot" style="background:#EEEFF7;"></span>Azul Suave</td>
+              <td><span class="hex-code">#EEEFF7</span></td>
+            </tr>
+            <tr>
+              <td>Planos de fundo de cards de vaga, inputs e modais</td>
+              <td><span class="color-dot" style="background:#FFFFFF;"></span>Branco Puro</td>
+              <td><span class="hex-code">#FFFFFF</span></td>
+            </tr>
+            <tr>
+              <td>Fundo geral do Portal e do Painel Administrativo</td>
+              <td><span class="color-dot" style="background:#F5F5F7;"></span>Cinza Neve</td>
+              <td><span class="hex-code">#F5F5F7</span></td>
+            </tr>
+            <tr>
+              <td>Divisórias e bordas gerais de cards e tabelas</td>
+              <td><span class="color-dot" style="background:#E5E7EB;"></span>Cinza Claro</td>
+              <td><span class="hex-code">#E5E7EB</span></td>
+            </tr>
+            <tr>
+              <td>Placeholders de digitação e ícones inativos</td>
+              <td><span class="color-dot" style="background:#9CA3AF;"></span>Cinza Médio</td>
+              <td><span class="hex-code">#9CA3AF</span></td>
+            </tr>
+            <tr>
+              <td>Metadados da vaga (localidade, data de postagem)</td>
+              <td><span class="color-dot" style="background:#6B7280;"></span>Cinza Texto</td>
+              <td><span class="hex-code">#6B7280</span></td>
+            </tr>
+            <tr>
+              <td>Títulos e corpo de texto principal de leitura</td>
+              <td><span class="color-dot" style="background:#1A1A2E;"></span>Escuro JAB</td>
+              <td><span class="hex-code">#1A1A2E</span></td>
+            </tr>
+            <tr>
+              <td>Status de vaga "Validada" no painel de controle</td>
+              <td><span class="color-dot" style="background:#059669;"></span>Verde Sucesso</td>
+              <td><span class="hex-code">#059669</span></td>
+            </tr>
+            <tr>
+              <td>Status de vaga "Pendente" no painel administrativo</td>
+              <td><span class="color-dot" style="background:#D97706;"></span>Laranja Alerta</td>
+              <td><span class="hex-code">#D97706</span></td>
+            </tr>
+            <tr>
+              <td>Status de vaga "Rejeitada" ou "Expirada"</td>
+              <td><span class="color-dot" style="background:#DC2626;"></span>Vermelho Erro</td>
+              <td><span class="hex-code">#DC2626</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert alert--warning fade-in">
+        <span class="alert-icon">&#9888;</span>
+        <div>As cores complementares e auxiliares devem enriquecer a experiência, categorizar elementos e criar variedade. Nunca devem competir com a dominância visual das três cores primárias da marca (Verde Aprendiz, Azul Carreira e Dourado Oportunidade).</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: CORES NEUTRAS ═══ -->
+  <section id="neutras">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.6 — Cores Neutras</div>
+        <div class="section-title">Respiro & Estrutura</div>
+        <div class="section-subtitle">Elementos fundamentais de layout que servem de apoio à tipografia, delimitação de bordas e planos de fundo de leitura.</div>
+      </div>
+
+      <div class="color-grid color-grid--6 fade-in">
+        <!-- Branco Puro -->
+        <div class="swatch" onclick="copyHex(this, '#FFFFFF')">
+          <div class="swatch-color" style="background: #FFFFFF;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Branco Puro</div>
+            <div class="swatch-hex">#FFFFFF</div>
+            <div class="swatch-meta">Fundo principal, cards</div>
+          </div>
+        </div>
+
+        <!-- Cinza Neve -->
+        <div class="swatch" onclick="copyHex(this, '#F5F5F7')">
+          <div class="swatch-color" style="background: #F5F5F7;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cinza Neve</div>
+            <div class="swatch-hex">#F5F5F7</div>
+            <div class="swatch-meta">Fundo do portal</div>
+          </div>
+        </div>
+
+        <!-- Cinza Claro -->
+        <div class="swatch" onclick="copyHex(this, '#E5E7EB')">
+          <div class="swatch-color" style="background: #E5E7EB;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cinza Claro</div>
+            <div class="swatch-hex">#E5E7EB</div>
+            <div class="swatch-meta">Bordas, divisórias</div>
+          </div>
+        </div>
+
+        <!-- Cinza Médio -->
+        <div class="swatch" onclick="copyHex(this, '#9CA3AF')">
+          <div class="swatch-color" style="background: #9CA3AF;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cinza Médio</div>
+            <div class="swatch-hex">#9CA3AF</div>
+            <div class="swatch-meta">Placeholders, desabilitados</div>
+          </div>
+        </div>
+
+        <!-- Cinza Texto -->
+        <div class="swatch" onclick="copyHex(this, '#6B7280')">
+          <div class="swatch-color" style="background: #6B7280;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cinza Texto</div>
+            <div class="swatch-hex">#6B7280</div>
+            <div class="swatch-meta">Textos de apoio e tags</div>
+          </div>
+        </div>
+
+        <!-- Escuro -->
+        <div class="swatch" onclick="copyHex(this, '#1A1A2E')">
+          <div class="swatch-color" style="background: #1A1A2E;">
+            <div class="swatch-copy-toast">Copiado!</div>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">Escuro JAB</div>
+            <div class="swatch-hex">#1A1A2E</div>
+            <div class="swatch-meta">Texto principal e títulos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: CORES SEMÂNTICAS ═══ -->
+  <section id="semanticas">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.7 — Cores Funcionais</div>
+        <div class="section-title">Feedback Semântico</div>
+        <div class="section-subtitle">Sinalizadores lógicos universais para feedbacks de sucesso, alertas, erros e informações de dados do painel de triagem do JAB.</div>
+      </div>
+
+      <div class="color-grid color-grid--4 fade-in">
+        <!-- Sucesso -->
+        <div class="semantic-card">
+          <div class="semantic-color-split">
+            <div class="semantic-half" style="background: #059669;"><span class="semantic-label-value">#059669</span></div>
+            <div class="semantic-half semantic-half--light" style="background: #D1FAE5;"><span class="semantic-label-value">#D1FAE5</span></div>
+          </div>
+          <div class="semantic-info">
+            <div class="semantic-name">Sucesso</div>
+            <div class="semantic-desc">Vagas moderadas como válidas ou envios de formulário bem sucedidos.</div>
+          </div>
+        </div>
+
+        <!-- Alerta -->
+        <div class="semantic-card">
+          <div class="semantic-color-split">
+            <div class="semantic-half" style="background: #D97706;"><span class="semantic-label-value">#D97706</span></div>
+            <div class="semantic-half semantic-half--light" style="background: #FEF3C7;"><span class="semantic-label-value">#FEF3C7</span></div>
+          </div>
+          <div class="semantic-info">
+            <div class="semantic-name">Alerta</div>
+            <div class="semantic-desc">Vagas em triagem pendente de moderação manual pelo administrador.</div>
+          </div>
+        </div>
+
+        <!-- Erro -->
+        <div class="semantic-card">
+          <div class="semantic-color-split">
+            <div class="semantic-half" style="background: #DC2626;"><span class="semantic-label-value">#DC2626</span></div>
+            <div class="semantic-half semantic-half--light" style="background: #FEE2E2;"><span class="semantic-label-value">#FEE2E2</span></div>
+          </div>
+          <div class="semantic-info">
+            <div class="semantic-name">Erro</div>
+            <div class="semantic-desc">Vagas rejeitadas, expiradas ou exclusões do banco de dados.</div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="semantic-card">
+          <div class="semantic-color-split">
+            <div class="semantic-half" style="background: #2965AE;"><span class="semantic-label-value">#2965AE</span></div>
+            <div class="semantic-half semantic-half--light" style="background: #EEF4FB;"><span class="semantic-label-value">#EEF4FB</span></div>
+          </div>
+          <div class="semantic-info">
+            <div class="semantic-name">Informação</div>
+            <div class="semantic-desc">Dicas de usabilidade do formulário ou status de sincronização local.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: GRADIENTES ═══ -->
+  <section id="gradientes" style="background: var(--color-white);">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.8 — Gradientes</div>
+        <div class="section-title">Composições Fluídas</div>
+        <div class="section-subtitle">Utilizados em botões premium, cabeçalhos de painel e no banner principal para criar um visual rico e de alta fidelidade técnica.</div>
+      </div>
+
+      <div class="gradient-grid fade-in">
+        <!-- Gradiente Brasil -->
+        <div class="gradient-card" onclick="copyText(this, 'linear-gradient(135deg, #48AD45 0%, #FABD14 50%, #2965AE 100%)')">
+          <div class="gradient-preview" style="background: linear-gradient(135deg, #48AD45 0%, #FABD14 50%, #2965AE 100%);">
+            <div class="gradient-copy-overlay"><button class="gradient-copy-btn">Copiar CSS</button></div>
+          </div>
+          <div class="gradient-info">
+            <div class="gradient-card-name">Gradiente Brasil (Institucional)</div>
+            <div class="gradient-code">linear-gradient(135deg, #48AD45 0%, #FABD14 50%, #2965AE 100%)</div>
+          </div>
+        </div>
+
+        <!-- Gradiente Crescimento -->
+        <div class="gradient-card" onclick="copyText(this, 'linear-gradient(135deg, #48AD45, #337B31)')">
+          <div class="gradient-preview" style="background: linear-gradient(135deg, #48AD45, #337B31);">
+            <div class="gradient-copy-overlay"><button class="gradient-copy-btn">Copiar CSS</button></div>
+          </div>
+          <div class="gradient-info">
+            <div class="gradient-card-name">Gradiente Crescimento (Verde)</div>
+            <div class="gradient-code">linear-gradient(135deg, #48AD45, #337B31)</div>
+          </div>
+        </div>
+
+        <!-- Gradiente Carreira -->
+        <div class="gradient-card" onclick="copyText(this, 'linear-gradient(135deg, #2965AE, #255B9D)')">
+          <div class="gradient-preview" style="background: linear-gradient(135deg, #2965AE, #255B9D);">
+            <div class="gradient-copy-overlay"><button class="gradient-copy-btn">Copiar CSS</button></div>
+          </div>
+          <div class="gradient-info">
+            <div class="gradient-card-name">Gradiente Carreira (Azul)</div>
+            <div class="gradient-code">linear-gradient(135deg, #2965AE, #255B9D)</div>
+          </div>
+        </div>
+
+        <!-- Gradiente Duo -->
+        <div class="gradient-card" onclick="copyText(this, 'linear-gradient(135deg, #48AD45, #96CA94, #2965AE)')">
+          <div class="gradient-preview" style="background: linear-gradient(135deg, #48AD45, #96CA94, #2965AE);">
+            <div class="gradient-copy-overlay"><button class="gradient-copy-btn">Copiar CSS</button></div>
+          </div>
+          <div class="gradient-info">
+            <div class="gradient-card-name">Gradiente Duo</div>
+            <div class="gradient-code">linear-gradient(135deg, #48AD45, #96CA94, #2965AE)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: TIPOGRAFIA ═══ -->
+  <section id="tipografia">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">4.0 — Tipografia</div>
+        <div class="section-title">Famílias & Escala</div>
+        <div class="section-subtitle">Usamos Outfit para manchetes geométricas fortes e Plus Jakarta Sans para uma leitura corporal suave e ergonômica.</div>
+      </div>
+
+      <div class="color-grid color-grid--2 fade-in">
+        <!-- Display Font -->
+        <div class="specimen-card">
+          <div class="specimen-header">
+            <span class="specimen-font-title">Outfit</span>
+            <span class="specimen-font-meta">Google Fonts · Display</span>
+          </div>
+          <div class="specimen-alphabet">AaBbCcDdEeFf GgHhIiJjKkLl MmNnOoPpQqRr SsTtUuVvWwXx YyZz 1234567890</div>
+          <div class="specimen-pangram"><strong>Outfit Bold (700)</strong> — A rápida raposa marrom salta sobre o cão preguiçoso.</div>
+        </div>
+
+        <!-- Body Font -->
+        <div class="specimen-card">
+          <div class="specimen-header">
+            <span class="specimen-font-title">Plus Jakarta Sans</span>
+            <span class="specimen-font-meta">Google Fonts · Body</span>
+          </div>
+          <div class="specimen-alphabet specimen-alphabet--body">AaBbCcDdEeFf GgHhIiJjKkLl MmNnOoPpQqRr SsTtUuVvWwXx YyZz 1234567890</div>
+          <div class="specimen-pangram">Plus Jakarta Sans Regular (400) — A rápida raposa marrom salta sobre o cão preguiçoso.</div>
+        </div>
+      </div>
+
+      <!-- Scale Table -->
+      <table class="typo-table fade-in">
+        <thead>
+          <tr>
+            <th>Token CSS</th>
+            <th>Tamanho</th>
+            <th>Uso Recomendado</th>
+            <th>Preview</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code style="font-family:var(--font-mono)">--text-2xl</code></td>
+            <td>48px (3.0rem)</td>
+            <td>Títulos hero principais (Desktop)</td>
+            <td><span class="typo-preview-text" style="font-size: 2.2rem;">Portal JAB</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:var(--font-mono)">--text-xl</code></td>
+            <td>32px (2.0rem)</td>
+            <td>Cabeçalhos de seções e títulos de páginas</td>
+            <td><span class="typo-preview-text" style="font-size: 1.8rem;">Vagas Disponíveis</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:var(--font-mono)">--text-lg</code></td>
+            <td>24px (1.5rem)</td>
+            <td>Títulos de cards de vagas</td>
+            <td><span class="typo-preview-text" style="font-size: 1.35rem;">Jovem Aprendiz Administrativo</span></td>
+          </tr>
+          <tr>
+            <td><code style="font-family:var(--font-mono)">--text-base</code></td>
+            <td>16px (1.0rem)</td>
+            <td>Texto de corpo principal, descrição de vaga</td>
+            <td style="font-family: var(--font-body); font-weight: 400; white-space: nowrap;">Esta vaga é destinada ao primeiro emprego...</td>
+          </tr>
+          <tr>
+            <td><code style="font-family:var(--font-mono)">--text-xs</code></td>
+            <td>12px (0.75rem)</td>
+            <td>Metadados, local, datas</td>
+            <td style="font-family: var(--font-body); font-weight: 500; color: var(--color-gray-text);">São Paulo - SP · Há 2 dias</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: ACESSIBILIDADE ═══ -->
+  <section id="acessibilidade" style="background: var(--color-white);">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">3.9 — Acessibilidade</div>
+        <div class="section-title">Contraste & WCAG 2.1</div>
+        <div class="section-subtitle">Validações estritas de contraste de cores de acordo com os padrões mundiais para garantir legibilidade aos jovens candidatos.</div>
+      </div>
+
+      <table class="guide-table fade-in">
+        <thead>
+          <tr>
+            <th>Cor de Fundo</th>
+            <th>Cor de Texto</th>
+            <th>Ratio</th>
+            <th>Status WCAG 2.1 AA</th>
+            <th>Regra de Uso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="color-dot" style="background: #FFFFFF;"></span> Branco</td>
+            <td><span class="color-dot" style="background: #1A1A2E;"></span> Escuro</td>
+            <td>16.2:1</td>
+            <td><span class="accessibility-badge accessibility-badge--pass">Aprovado (AAA)</span></td>
+            <td>Leitura de descrições e títulos gerais da vaga.</td>
+          </tr>
+          <tr>
+            <td><span class="color-dot" style="background: #FFFFFF;"></span> Branco</td>
+            <td><span class="color-dot" style="background: #2965AE;"></span> Azul Carreira</td>
+            <td>4.8:1</td>
+            <td><span class="accessibility-badge accessibility-badge--pass">Aprovado (AA)</span></td>
+            <td>Títulos secundários, links comuns de texto.</td>
+          </tr>
+          <tr>
+            <td><span class="color-dot" style="background: #FFFFFF;"></span> Branco</td>
+            <td><span class="color-dot" style="background: #48AD45;"></span> Verde Aprendiz</td>
+            <td>2.3:1</td>
+            <td><span class="accessibility-badge accessibility-badge--fail">Reprovado</span></td>
+            <td><strong>Proibido usar texto com essa cor.</strong> Usar apenas em ícones decorativos.</td>
+          </tr>
+          <tr>
+            <td><span class="color-dot" style="background: #FFFFFF;"></span> Branco</td>
+            <td><span class="color-dot" style="background: #337B31;"></span> Verde Floresta</td>
+            <td>4.6:1</td>
+            <td><span class="accessibility-badge accessibility-badge--pass">Aprovado (AA)</span></td>
+            <td>Usar Verde Floresta se precisar exibir texto verde sobre fundo branco.</td>
+          </tr>
+          <tr>
+            <td><span class="color-dot" style="background: #48AD45;"></span> Verde Aprendiz</td>
+            <td><span class="color-dot" style="background: #FFFFFF;"></span> Branco</td>
+            <td>2.3:1</td>
+            <td><span class="accessibility-badge accessibility-badge--fail">Reprovado</span></td>
+            <td><strong>Proibido para botões de texto pequeno.</strong> Dificulta a leitura em mobile.</td>
+          </tr>
+          <tr>
+            <td><span class="color-dot" style="background: #48AD45;"></span> Verde Aprendiz</td>
+            <td><span class="color-dot" style="background: #1A1A2E;"></span> Escuro</td>
+            <td>7.0:1</td>
+            <td><span class="accessibility-badge accessibility-badge--pass">Aprovado (AAA)</span></td>
+            <td><strong>Recomendado:</strong> Botão de candidatura com texto escuro sobre fundo verde.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert--info fade-in">
+        <span class="alert-icon">&#8505;</span>
+        <div>Para botões com o fundo <strong>Verde Aprendiz</strong> (<code style="font-family:var(--font-mono);font-size:0.78rem;">#48AD45</code>), a especificação oficial de marca impõe o uso de texto <strong>Escuro</strong> (<code style="font-family:var(--font-mono);font-size:0.78rem;">#1A1A2E</code>) para atingir contraste AAA de 7.0:1, garantindo acessibilidade a todos.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: COMBINAÇÕES ═══ -->
+  <section id="combinacoes">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">11.0 — Regras de Uso</div>
+        <div class="section-title">Combinações Aprovadas</div>
+        <div class="section-subtitle">Exemplos visuais de pares de fundo e texto testados e recomendados para a construção do site e painel de controle JAB.</div>
+      </div>
+
+      <div class="combo-grid fade-in">
+        <!-- Combo 1 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #FFFFFF; color: #1A1A2E; border: 1px solid #E5E7EB;">JAB</div>
+          <div class="combo-label">Escuro sobre Branco<br>Descrição de vagas</div>
+        </div>
+        <!-- Combo 2 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #FFFFFF; color: #2965AE; border: 1px solid #E5E7EB;">JAB</div>
+          <div class="combo-label">Azul sobre Branco<br>Títulos secundários, links</div>
+        </div>
+        <!-- Combo 3 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #48AD45; color: #1A1A2E;">JAB</div>
+          <div class="combo-label">Escuro sobre Verde<br>Botão principal Candidatar</div>
+        </div>
+        <!-- Combo 4 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #2965AE; color: #FFFFFF;">JAB</div>
+          <div class="combo-label">Branco sobre Azul<br>Cabeçalhos, botões secundários</div>
+        </div>
+        <!-- Combo 5 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #F0F7F0; color: #337B31;">JAB</div>
+          <div class="combo-label">Verde Esc. sobre Menta<br>Cards informativos leves</div>
+        </div>
+        <!-- Combo 6 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #EEF4FB; color: #1A1A2E;">JAB</div>
+          <div class="combo-label">Escuro sobre Celeste<br>Painéis de buscas, inputs</div>
+        </div>
+        <!-- Combo 7 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #FABD14; color: #1A1A2E;">JAB</div>
+          <div class="combo-label">Escuro sobre Dourado<br>Badge "Nova Vaga", "Destaque"</div>
+        </div>
+        <!-- Combo 8 -->
+        <div class="combo-card">
+          <div class="combo-preview" style="background: #F5F5F7; color: #6B7280; border: 1px solid #E5E7EB;">JAB</div>
+          <div class="combo-label">Cinza sobre Neve<br>Metadados, rodapés de card</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: ESPAÇAMENTOS ═══ -->
+  <section id="espacamentos" style="background: var(--color-white);">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">5.0 — Espaçamentos</div>
+        <div class="section-title">Layout & Proporções</div>
+        <div class="section-subtitle">Sistema de grid baseado em escala de múltiplos de 4px para garantir total consistência e simetria matemática entre componentes.</div>
+      </div>
+
+      <div class="spacing-grid fade-in">
+        <div class="spacing-row">
+          <span class="spacing-token">--space-2xs</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 3.125%;"></div></div>
+          <span class="spacing-value">0.25rem (4px)</span>
+        </div>
+        <div class="spacing-row">
+          <span class="spacing-token">--space-xs</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 6.25%;"></div></div>
+          <span class="spacing-value">0.5rem (8px)</span>
+        </div>
+        <div class="spacing-row">
+          <span class="spacing-token">--space-sm</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 12.5%;"></div></div>
+          <span class="spacing-value">1.0rem (16px)</span>
+        </div>
+        <div class="spacing-row">
+          <span class="spacing-token">--space-md</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 18.75%;"></div></div>
+          <span class="spacing-value">1.5rem (24px)</span>
+        </div>
+        <div class="spacing-row">
+          <span class="spacing-token">--space-lg</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 25%;"></div></div>
+          <span class="spacing-value">2.0rem (32px)</span>
+        </div>
+        <div class="spacing-row">
+          <span class="spacing-token">--space-xl</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 50%;"></div></div>
+          <span class="spacing-value">4.0rem (64px)</span>
+        </div>
+        <div class="spacing-row">
+          <span class="spacing-token">--space-2xl</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 75%;"></div></div>
+          <span class="spacing-value">6.0rem (96px)</span>
+        </div>
+        <div class="spacing-row">
+          <span class="spacing-token">--space-3xl</span>
+          <div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 100%;"></div></div>
+          <span class="spacing-value">8.0rem (128px)</span>
+        </div>
+      </div>
+
+      <!-- Sombras -->
+      <div class="subsection mt-2 fade-in">
+        <div class="subsection-title">Sombras & Profundidades</div>
+        <div class="subsection-desc">Sombras calculadas para simular elevação física sobre os eixos Z em ambiente desktop.</div>
+        <div class="shadow-grid">
+          <div class="shadow-card" style="box-shadow: 0 1px 3px rgba(26,26,46,0.06), 0 1px 2px rgba(26,26,46,0.04);">
+            <div class="shadow-card-label">--shadow-sm (Cards Vaga)</div>
+          </div>
+          <div class="shadow-card" style="box-shadow: 0 8px 24px rgba(26,26,46,0.08);">
+            <div class="shadow-card-label">--shadow-md (Active/Inputs)</div>
+          </div>
+          <div class="shadow-card" style="box-shadow: 0 16px 40px rgba(26,26,46,0.12);">
+            <div class="shadow-card-label">--shadow-lg (Modais/Menus)</div>
+          </div>
+          <div class="shadow-card" style="box-shadow: 0 0 16px rgba(72,173,69,0.3);">
+            <div class="shadow-card-label">--shadow-glow-green</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ SECTION: CSS TOKENS ═══ -->
+  <section id="tokens">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-label">10.0 — Desenvolvimento</div>
+        <div class="section-title">CSS Design Tokens</div>
+        <div class="section-subtitle">Variáveis prontas para cópia e colagem rápida nos arquivos css do portal ou painel de controle administrativo.</div>
+      </div>
+
+      <div class="code-block fade-in">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">tokens.css</span>
+          <button class="code-copy-btn" onclick="copyTokens(this)">Copiar Tudo</button>
+        </div>
+        <div class="code-body">
+          <pre id="cssTokens"><span class="selector">:root</span> <span class="bracket">{</span>
+
+  <span class="comment">/* ═══ Cores Primárias ═══ */</span>
+  <span class="prop">--color-primary</span>:          <span class="val">#48AD45</span>; <span class="comment">/* Verde Aprendiz */</span>
+  <span class="prop">--color-primary-rgb</span>:      <span class="val">72, 173, 69</span>;
+  <span class="prop">--color-accent</span>:           <span class="val">#2965AE</span>; <span class="comment">/* Azul Carreira */</span>
+  <span class="prop">--color-accent-rgb</span>:       <span class="val">41, 101, 174</span>;
+  <span class="prop">--color-highlight</span>:        <span class="val">#FABD14</span>; <span class="comment">/* Amarelo Dourado */</span>
+  <span class="prop">--color-highlight-rgb</span>:    <span class="val">250, 189, 20</span>;
+
+  <span class="comment">/* ═══ Cores Secundárias (Derivações HSL) ═══ */</span>
+  <span class="prop">--color-primary-dark</span>:     <span class="val">#337B31</span>; <span class="comment">/* L -11% */</span>
+  <span class="prop">--color-primary-medium</span>:   <span class="val">#96CA94</span>; <span class="comment">/* L +19%, S -22% */</span>
+  <span class="prop">--color-accent-warm</span>:      <span class="val">#4985CB</span>; <span class="comment">/* L +11% */</span>
+  <span class="prop">--color-accent-dark</span>:      <span class="val">#255B9D</span>; <span class="comment">/* L -4% */</span>
+
+  <span class="comment">/* ═══ Tints & Shades ═══ */</span>
+  <span class="prop">--color-primary-ice</span>:      <span class="val">#F0F7F0</span>; <span class="comment">/* L 95%, S reduzida */</span>
+  <span class="prop">--color-primary-mist</span>:     <span class="val">#DCECDC</span>; <span class="comment">/* L 88%, S reduzida */</span>
+  <span class="prop">--color-accent-light</span>:     <span class="val">#EEF4FB</span>; <span class="comment">/* L 96% */</span>
+  <span class="prop">--color-accent-peach</span>:     <span class="val">#D5E4F5</span>; <span class="comment">/* L 90% */</span>
+
+  <span class="comment">/* ═══ Neutros Estilizados ═══ */</span>
+  <span class="prop">--color-white</span>:            <span class="val">#FFFFFF</span>;
+  <span class="prop">--color-snow</span>:             <span class="val">#F5F5F7</span>;
+  <span class="prop">--color-gray-light</span>:       <span class="val">#E5E7EB</span>;
+  <span class="prop">--color-gray-medium</span>:      <span class="val">#9CA3AF</span>;
+  <span class="prop">--color-gray-text</span>:        <span class="val">#6B7280</span>;
+  <span class="prop">--color-dark</span>:             <span class="val">#1A1A2E</span>;
+
+  <span class="comment">/* ═══ Cores Complementares ═══ */</span>
+  <span class="prop">--color-magenta-jab</span>:      <span class="val">#A845A6</span>;
+  <span class="prop">--color-bronze-carreira</span>:  <span class="val">#AE7229</span>;
+  <span class="prop">--color-violet-deep</span>:      <span class="val">#8245A8</span>;
+  <span class="prop">--color-pink-orquidea</span>:    <span class="val">#A84589</span>;
+  <span class="prop">--color-orange-clay</span>:      <span class="val">#AE7029</span>;
+  <span class="prop">--color-green-olive</span>:      <span class="val">#75AE29</span>;
+  <span class="prop">--color-blue-ultramarine</span>: <span class="val">#454EA8</span>;
+  <span class="prop">--color-red-coral</span>:        <span class="val">#A84547</span>;
+  <span class="prop">--color-fuchsia-dark</span>:     <span class="val">#AE2965</span>;
+  <span class="prop">--color-green-apple</span>:      <span class="val">#72AE29</span>;
+  <span class="prop">--color-yellow-green</span>:     <span class="val">#59A845</span>;
+  <span class="prop">--color-emerald-green</span>:    <span class="val">#45A869</span>;
+  <span class="prop">--color-cyan-turquoise</span>:   <span class="val">#29AEAE</span>;
+  <span class="prop">--color-blue-cobalt</span>:      <span class="val">#2947AE</span>;
+
+  <span class="comment">/* ═══ Semânticas ═══ */</span>
+  <span class="prop">--color-success</span>:          <span class="val">#059669</span>;
+  <span class="prop">--color-success-light</span>:    <span class="val">#D1FAE5</span>;
+  <span class="prop">--color-warning</span>:          <span class="val">#D97706</span>;
+  <span class="prop">--color-warning-light</span>:    <span class="val">#FEF3C7</span>;
+  <span class="prop">--color-error</span>:            <span class="val">#DC2626</span>;
+  <span class="prop">--color-error-light</span>:      <span class="val">#FEE2E2</span>;
+
+  <span class="comment">/* ═══ Gradientes ═══ */</span>
+  <span class="prop">--gradient-crescimento</span>:   <span class="val">linear-gradient(135deg, #48AD45, #337B31)</span>;
+  <span class="prop">--gradient-carreira</span>:      <span class="val">linear-gradient(135deg, #2965AE, #255B9D)</span>;
+  <span class="prop">--gradient-brasil</span>:        <span class="val">linear-gradient(135deg, #48AD45 0%, #FABD14 50%, #2965AE 100%)</span>;
+  <span class="prop">--gradient-respiro</span>:       <span class="val">linear-gradient(180deg, #F0F7F0, #FFFFFF)</span>;
+
+  <span class="comment">/* ═══ Tipografia ═══ */</span>
+  <span class="prop">--font-display</span>:           <span class="val">'Outfit', sans-serif</span>;
+  <span class="prop">--font-body</span>:              <span class="val">'Plus Jakarta Sans', sans-serif</span>;
+  <span class="prop">--font-mono</span>:              <span class="val">'JetBrains Mono', monospace</span>;
+
+  <span class="comment">/* ═══ Espaçamentos ═══ */</span>
+  <span class="prop">--space-2xs</span>:              <span class="val">0.25rem</span>;
+  <span class="prop">--space-xs</span>:               <span class="val">0.5rem</span>;
+  <span class="prop">--space-sm</span>:               <span class="val">1rem</span>;
+  <span class="prop">--space-md</span>:               <span class="val">1.5rem</span>;
+  <span class="prop">--space-lg</span>:               <span class="val">2rem</span>;
+  <span class="prop">--space-xl</span>:               <span class="val">4rem</span>;
+  <span class="prop">--space-2xl</span>:              <span class="val">6rem</span>;
+
+  <span class="comment">/* ═══ Elementos Gráficos ═══ */</span>
+  <span class="prop">--radius-sm</span>:              <span class="val">8px</span>;
+  <span class="prop">--radius-md</span>:              <span class="val">14px</span>;
+  <span class="prop">--radius-lg</span>:              <span class="val">20px</span>;
+  <span class="prop">--radius-pill</span>:            <span class="val">999px</span>;
+
+  <span class="comment">/* ═══ Sombras ═══ */</span>
+  <span class="prop">--shadow-sm</span>:              <span class="val">0 1px 3px rgba(26,26,46,0.06), 0 1px 2px rgba(26,26,46,0.04)</span>;
+  <span class="prop">--shadow-md</span>:              <span class="val">0 8px 24px rgba(26,26,46,0.08)</span>;
+  <span class="prop">--shadow-lg</span>:              <span class="val">0 16px 40px rgba(26,26,46,0.12)</span>;
+  <span class="prop">--shadow-glow-green</span>:      <span class="val">0 0 16px rgba(72,173,69,0.3)</span>;
+
+<span class="bracket">}</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand"><span>&#9679;</span> JAB<span class="highlight">.</span></div>
+      <p>Manual oficial de Identidade Visual e especificações de marca do Portal JAB.<br>Ambiente Local de Desenvolvimento.</p>
+      <hr class="footer-line">
+      <div class="footer-copy">JAB &mdash; Versão 1.0 &mdash; Junho 2026</div>
+    </div>
+  </footer>
+
+  <!-- ═══ SCRIPTS ═══ -->
+  <script>
+    /* ── Copy hex ── */
+    function copyHex(el, hex) {
+      navigator.clipboard.writeText(hex).then(function() {
+        el.classList.add('copied');
+        setTimeout(function() { el.classList.remove('copied'); }, 1200);
+      });
+    }
+
+    /* ── Copy text/CSS ── */
+    function copyText(el, text) {
+      navigator.clipboard.writeText(text).then(function() {
+        var info = el.querySelector('.gradient-card-name') || el;
+        var orig = info.textContent;
+        info.textContent = 'Copiado!';
+        setTimeout(function() { info.textContent = orig; }, 1200);
+      });
+    }
+
+    /* ── Copy all CSS tokens ── */
+    function copyTokens(btn) {
+      var pre = document.getElementById('cssTokens');
+      var text = pre.textContent || pre.innerText;
+      navigator.clipboard.writeText(text).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copiado!';
+        btn.style.color = '#27C93F';
+        setTimeout(function() {
+          btn.textContent = orig;
+          btn.style.color = '';
+        }, 2000);
+      });
+    }
+
+    /* ── Scroll spy & nav shadow ── */
+    var nav = document.getElementById('nav');
+    var sections = document.querySelectorAll('section[id]');
+    var navLinks = document.querySelectorAll('.nav-links a');
+
+    function onScroll() {
+      var scrollY = window.scrollY;
+
+      // Nav shadow
+      if (scrollY > 10) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+
+      // Active link
+      var current = '';
+      sections.forEach(function(section) {
+        var top = section.offsetTop - 120;
+        if (scrollY >= top) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(function(link) {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    /* ── Intersection Observer ── */
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(function(el) {
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>

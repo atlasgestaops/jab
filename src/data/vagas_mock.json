@@ -1,0 +1,69 @@
+[
+  {
+    "id": "7fa840e49844486093cb7a7d4ee7a5bc",
+    "titulo": "Jovem Aprendiz - Área Administrativa",
+    "empresa": "Coca-Cola FEMSA",
+    "localidade": "São Paulo/SP",
+    "descricao": "Auxiliar na rotina do departamento administrativo, realizando controle de arquivos, digitação de dados, atendimento telefônico a clientes internos e externos, e organização de planilhas. Requisitos: Ensino médio completo ou em andamento, boa comunicação, organização e facilidade para trabalhar com computadores (Pacote Office). Benefícios: Assistência médica, Seguro de vida, Vale-refeição e Vale-transporte.",
+    "url": "https://femsa.gupy.io/jobs/123456",
+    "origem": "Gupy Femsa",
+    "status": "PENDENTE",
+    "data_publicacao": "2026-06-20",
+    "data_fechamento": "2026-07-20",
+    "data_descoberta": "2026-06-21T10:00:00Z"
+  },
+  {
+    "id": "a6204c3df2fb4d2c85a0062e78fa577c",
+    "titulo": "Jovem Aprendiz em Logística e Estoque",
+    "empresa": "Mercado Livre",
+    "localidade": "Remoto",
+    "descricao": "Apoio nas atividades operacionais do centro de distribuição, verificação de entrada e saída de mercadorias, conferência de notas fiscais e suporte no controle de estoque no sistema interno. Requisitos: Idade entre 18 e 22 anos, ensino médio completo, disponibilidade de 6 horas diárias. Benefícios: Vale-refeição, Assistência médica e odontológica, Curso de capacitação profissional em logística.",
+    "url": "https://mercadolivre.gupy.io/jobs/987654",
+    "origem": "Gupy Mercado Livre",
+    "status": "PENDENTE",
+    "data_publicacao": "2026-06-22",
+    "data_fechamento": null,
+    "data_descoberta": "2026-06-22T14:30:00Z"
+  },
+  {
+    "id": "b3e34b9d486d40beba39813c01be4300",
+    "titulo": "Jovem Aprendiz de Atendimento ao Cliente",
+    "empresa": "Banco Itaú",
+    "localidade": "Rio de Janeiro/RJ",
+    "descricao": "Orientação e triagem de clientes no autoatendimento das agências bancárias, suporte no esclarecimento de dúvidas sobre aplicativos e canais digitais, e organização de filas. Requisitos: Gostar de falar com pessoas, ser proativo, ensino médio completo ou cursando período noturno. Benefícios: Vale-refeição, Seguro de vida, Assistência odontológica e Participação nos lucros (PLR).",
+    "url": "https://itau.trabalheconosco.com.br/vaga-777",
+    "origem": "Itaú Carreiras",
+    "status": "VALIDADO",
+    "data_publicacao": "2026-06-18",
+    "data_fechamento": "2026-07-15",
+    "data_descoberta": "2026-06-19T09:15:00Z",
+    "data_validacao": "2026-06-20T11:00:00Z"
+  },
+  {
+    "id": "b5e82b7b23ac410abf411be4aa85871f",
+    "titulo": "Jovem Aprendiz Auxiliar de Produção",
+    "empresa": "Nestlé Brasil",
+    "localidade": "Belo Horizonte/MG",
+    "descricao": "Auxílio no acompanhamento da linha de embalagem, suporte aos operadores nas rotinas de segurança alimentar, preenchimento de relatórios simples de produção e organização da área de trabalho. Requisitos: Ensino médio cursando ou concluído, residir em BH, perfil focado e disciplinado. Benefícios: Refeitório no local, Vale-transporte, Assistência médica e cesta de produtos Nestlé.",
+    "url": "https://nestle.gupy.io/jobs/555444",
+    "origem": "Gupy Nestlé",
+    "status": "VALIDADO",
+    "data_publicacao": "2026-06-19",
+    "data_fechamento": "2026-07-30",
+    "data_descoberta": "2026-06-19T16:00:00Z",
+    "data_validacao": "2026-06-20T11:05:00Z"
+  },
+  {
+    "id": "c165aa210a6e47759de816cb60fa236d",
+    "titulo": "Aprendiz Assistente de Tecnologia",
+    "empresa": "Ambev",
+    "localidade": "São Paulo/SP",
+    "descricao": "Suporte básico a usuários de hardware e software local, formatação de computadores de funcionários, configuração de redes simples e auxílio no controle patrimonial de equipamentos de TI. Requisitos: Cursando técnico ou superior em informática/TI, paixão por tecnologia, curiosidade para aprender. Benefícios: Vale-refeição, Assistência médica, Desconto em produtos Ambev.",
+    "url": "https://ambev.gupy.io/jobs/112233",
+    "origem": "Gupy Ambev",
+    "status": "PENDENTE",
+    "data_publicacao": "2026-06-23",
+    "data_fechamento": null,
+    "data_descoberta": "2026-06-23T08:00:00Z"
+  }
+]

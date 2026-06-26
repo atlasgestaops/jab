@@ -1,0 +1,512 @@
+{
+  "name": "JAB - Chatbot WhatsApp (Onboarding & Preferências)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp/webhook",
+        "options": {}
+      },
+      "id": "webhook-whatsapp-entry",
+      "name": "Webhook WhatsApp Entrada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai o remetente (número) e o texto da mensagem de forma genérica para APIs de WhatsApp\nconst body = $json.body;\nconst messageText = (body.text || body.message || body.body || '').trim();\nconst fromNumber = (body.from || body.phone || body.sender || '').replace(/\\D/g, '');\n\nreturn {\n  message: messageText,\n  from: fromNumber\n};"
+      },
+      "id": "code-extract-msg",
+      "name": "Normalizar Mensagem Entrada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [320, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT u.*, s.etapa_conversa FROM usuarios u LEFT JOIN chat_sessions s ON u.id = s.usuario_id WHERE u.whatsapp = '{{ $json.from }}' OR ('{{ $json.message }}' ILIKE 'Iniciar cadastro tok_%' AND u.token_confirmacao = SUBSTRING('{{ $json.message }}' FROM 18));"
+      },
+      "id": "postgres-get-user-session",
+      "name": "Buscar Usuário e Sessão",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [540, 300],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.all();\nconst msgData = $node[\"Normalizar Mensagem Entrada\"].json;\n\nif (results.length === 0 || !results[0].json.id) {\n  return { json: { step: 'DESCONHECIDO', text: msgData.message, from: msgData.from } };\n}\n\nconst user = results[0].json;\nconst message = msgData.message;\n\n// Se a mensagem contiver o comando de início/token, forçamos o início\nif (message.toLowerCase().startsWith('iniciar cadastro')) {\n  return { json: { step: 'INICIAR_CADASTRO', user, from: msgData.from, text: message } };\n}\n\nif (message.toLowerCase() === 'reconfigurar') {\n  return { json: { step: 'RECONFIGURAR', user, from: msgData.from, text: message } };\n}\n\n// Caso contrário, seguimos a máquina de estados baseada na etapa atual salva\nreturn {\n  json: {\n    step: user.etapa_conversa || 'NOVO_CADASTRO',\n    user,\n    from: msgData.from,\n    text: message\n  }\n};"
+      },
+      "id": "code-router-step",
+      "name": "Roteador de Etapa Chat",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.step }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "INICIAR_CADASTRO"
+            },
+            {
+              "value2": "RECONFIGURAR"
+            },
+            {
+              "value2": "ESTADO_CIDADE"
+            },
+            {
+              "value2": "CATEGORIAS"
+            },
+            {
+              "value2": "FREQUENCIA"
+            }
+          ]
+        },
+        "fallbackOutput": 5
+      },
+      "id": "switch-chat-steps",
+      "name": "Switch Etapa Conversa",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [980, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE usuarios SET whatsapp = '{{ $json.from }}' WHERE id = '{{ $json.user.id }}';\nINSERT INTO chat_sessions (usuario_id, etapa_conversa, data_atualizacao) VALUES ('{{ $json.user.id }}', 'ESTADO_CIDADE', NOW())\nON CONFLICT (usuario_id) DO UPDATE SET etapa_conversa = 'ESTADO_CIDADE', data_atualizacao = NOW();"
+      },
+      "id": "postgres-init-session",
+      "name": "Inicializar Sessão Chat",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1240, 60],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  from: $node[\"Roteador de Etapa Chat\"].json.from,\n  message: `Olá, ${$node[\"Roteador de Etapa Chat\"].json.user.nome}! Fico muito feliz que confirmou seu e-mail.\\n\\nPara começarmos a configurar seu robô de vagas, por favor me informe o seu **Estado e Cidade** de residência.\\n\\n*(Exemplo: São Paulo/SP)*`\n};"
+      },
+      "id": "code-msg-init",
+      "name": "Msg Pergunta Localidade",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 60]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO chat_sessions (usuario_id, etapa_conversa, data_atualizacao) VALUES ('{{ $json.user.id }}', 'ESTADO_CIDADE', NOW())\nON CONFLICT (usuario_id) DO UPDATE SET etapa_conversa = 'ESTADO_CIDADE', data_atualizacao = NOW();"
+      },
+      "id": "postgres-reinit-session",
+      "name": "Reiniciar Sessão Chat",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1240, 180],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  from: $node[\"Roteador de Etapa Chat\"].json.from,\n  message: `Certo! Vamos reconfigurar seu robô de alertas.\\n\\nQual é o seu **Estado e Cidade**?\\n\\n*(Exemplo: Belo Horizonte/MG)*`\n};"
+      },
+      "id": "code-msg-reinit",
+      "name": "Msg Reconfigura Localidade",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.text;\nlet estado = 'SP';\nlet cidade = text;\n\n// Tentar separar Cidade/UF\nif (text.includes('/')) {\n  const parts = text.split('/');\n  cidade = parts[0].trim();\n  estado = parts[1].trim().toUpperCase();\n} else if (text.includes('-')) {\n  const parts = text.split('-');\n  cidade = parts[0].trim();\n  estado = parts[1].trim().toUpperCase();\n}\n\nreturn {\n  userId: $json.user.id,\n  from: $json.from,\n  cidade,\n  estado\n};"
+      },
+      "id": "code-parse-localidade",
+      "name": "Processar Cidade e Estado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE usuarios SET cidade = '{{ $json.cidade }}', estado = '{{ $json.estado }}' WHERE id = '{{ $json.userId }}';\nUPDATE chat_sessions SET etapa_conversa = 'CATEGORIAS', data_atualizacao = NOW() WHERE usuario_id = '{{ $json.userId }}';"
+      },
+      "id": "postgres-save-localidade",
+      "name": "Salvar Localidade Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1460, 300],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  from: $node[\"Processar Cidade e Estado\"].json.from,\n  message: `Entendido! Localidade configurada como: ${$node[\"Processar Cidade e Estado\"].json.cidade}/${$node[\"Processar Cidade e Estado\"].json.estado}.\\n\\nAgora, quais **categorias de vagas** você quer receber? Digite os números correspondentes separados por vírgula (exemplo: 1,3):\\n\\n1. Administrativo / Escritório\\n2. TI / Suporte Técnico\\n3. Recepção / Vendas / Atendimento\\n4. Telemarketing / Call Center\\n5. Serviços Gerais`\n};"
+      },
+      "id": "code-msg-categorias",
+      "name": "Msg Pergunta Categorias",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.text;\nconst map = {\n  '1': 'Administrativo',\n  '2': 'TI',\n  '3': 'Recepcao',\n  '4': 'Telemarketing',\n  '5': 'Servicos Gerais'\n};\n\nconst escolhidas = [];\nconst numbers = text.replace(/[^1-5,]/g, '').split(',');\n\nnumbers.forEach(num => {\n  const cleanNum = num.trim();\n  if (map[cleanNum]) {\n    escolhidas.push(map[cleanNum]);\n  }\n});\n\n// Fallback se ele digitar texto\nif (escolhidas.length === 0) {\n  escolhidas.push('Administrativo'); // Default\n}\n\nreturn {\n  userId: $json.user.id,\n  from: $json.from,\n  categorias: escolhidas.join(',')\n};"
+      },
+      "id": "code-parse-categorias",
+      "name": "Processar Categorias Digitadas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1240, 420]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE usuarios SET categorias_vagas = '{{ $json.categorias }}' WHERE id = '{{ $json.userId }}';\nUPDATE chat_sessions SET etapa_conversa = 'FREQUENCIA', data_atualizacao = NOW() WHERE usuario_id = '{{ $json.userId }}';"
+      },
+      "id": "postgres-save-categorias",
+      "name": "Salvar Categorias Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1460, 420],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  from: $node[\"Processar Categorias Digitadas\"].json.from,\n  message: `Perfeito! Categorias ativadas: ${$node[\"Processar Categorias Digitadas\"].json.categorias}.\\n\\nPor último, com qual **frequência** você deseja receber os alertas das vagas?\\n\\n1. **Em Tempo Real** (assim que o Admin aprovar)\\n2. **Resumo Diário** (um consolidado no final do dia)\\n3. **Resumo Semanal** (um consolidado no final de semana)`\n};"
+      },
+      "id": "code-msg-frequencia",
+      "name": "Msg Pergunta Frequência",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1680, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.text.trim();\nlet freq = 'DIARIO';\n\nif (text === '1') {\n  freq = 'REALTIME';\n} else if (text === '3') {\n  freq = 'SEMANAL';\n}\n\nreturn {\n  userId: $json.user.id,\n  from: $json.from,\n  frequencia: freq\n};"
+      },
+      "id": "code-parse-frequencia",
+      "name": "Processar Frequência",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1240, 540]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE usuarios SET frequencia_envio = '{{ $json.frequencia }}', whatsapp_configurado = true WHERE id = '{{ $json.userId }}';\nDELETE FROM chat_sessions WHERE usuario_id = '{{ $json.userId }}';"
+      },
+      "id": "postgres-save-frequencia",
+      "name": "Salvar Frequência e Ativar Robô",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1460, 540],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  from: $node[\"Processar Frequência\"].json.from,\n  message: `🎉 **Parabéns! Seu robô de vagas foi configurado com sucesso!**\\n\\nA partir de agora você começará a receber vagas verificadas de acordo com as preferências selecionadas.\\n\\nSe precisar mudar as preferências no futuro, basta digitar **'reconfigurar'** aqui no chat a qualquer momento!`\n};"
+      },
+      "id": "code-msg-concluido",
+      "name": "Msg Cadastro Concluído",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1680, 540]
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  from: $node[\"Normalizar Mensagem Entrada\"].json.from,\n  message: `Olá! Eu sou o JAB, robô assistente do Jovem Aprendiz Brasil.\\n\\nVejo que você enviou uma mensagem comum. Para começarmos seu cadastro de alertas no WhatsApp, primeiro insira seu e-mail no nosso site e clique no link de confirmação que enviamos!\\n\\nSite: **https://jab.atlasbot.tech**`\n};"
+      },
+      "id": "code-msg-default",
+      "name": "Msg Padrão Desconhecido",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1240, 680]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Este nó simula a resposta enviada pelo WhatsApp imprimindo-a no log do n8n\n// Em um chatbot real, aqui estaria o nó HTTP/REST ou o nó do provedor da API do WhatsApp.\nconst input = $input.first().json;\n\nconsole.log('====================================');\nconsole.log(`RESPOSTA WHATSAPP ENVIADA PARA: ${input.from}`);\nconsole.log(input.message);\nconsole.log('====================================');\n\nreturn {\n  dispatched: true,\n  to: input.from,\n  content: input.message\n};"
+      },
+      "id": "code-send-whatsapp-mock",
+      "name": "Simulador Envio WhatsApp",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    }
+  ],
+  "connections": {
+    "Webhook WhatsApp Entrada": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Mensagem Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Mensagem Entrada": {
+      "main": [
+        [
+          {
+            "node": "Buscar Usuário e Sessão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Usuário e Sessão": {
+      "main": [
+        [
+          {
+            "node": "Roteador de Etapa Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Roteador de Etapa Chat": {
+      "main": [
+        [
+          {
+            "node": "Switch Etapa Conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Etapa Conversa": {
+      "main": [
+        [
+          {
+            "node": "Inicializar Sessão Chat",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reiniciar Sessão Chat",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Processar Cidade e Estado",
+            "type": "main",
+            "index": 2
+          }
+        ],
+        [
+          {
+            "node": "Processar Categorias Digitadas",
+            "type": "main",
+            "index": 3
+          }
+        ],
+        [
+          {
+            "node": "Processar Frequência",
+            "type": "main",
+            "index": 4
+          }
+        ],
+        [
+          {
+            "node": "Msg Padrão Desconhecido",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Inicializar Sessão Chat": {
+      "main": [
+        [
+          {
+            "node": "Msg Pergunta Localidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg Pergunta Localidade": {
+      "main": [
+        [
+          {
+            "node": "Simulador Envio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reiniciar Sessão Chat": {
+      "main": [
+        [
+          {
+            "node": "Msg Reconfigura Localidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg Reconfigura Localidade": {
+      "main": [
+        [
+          {
+            "node": "Simulador Envio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Cidade e Estado": {
+      "main": [
+        [
+          {
+            "node": "Salvar Localidade Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Localidade Supabase": {
+      "main": [
+        [
+          {
+            "node": "Msg Pergunta Categorias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg Pergunta Categorias": {
+      "main": [
+        [
+          {
+            "node": "Simulador Envio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Categorias Digitadas": {
+      "main": [
+        [
+          {
+            "node": "Salvar Categorias Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Categorias Supabase": {
+      "main": [
+        [
+          {
+            "node": "Msg Pergunta Frequência",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg Pergunta Frequência": {
+      "main": [
+        [
+          {
+            "node": "Simulador Envio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Frequência": {
+      "main": [
+        [
+          {
+            "node": "Salvar Frequência e Ativar Robô",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Frequência e Ativar Robô": {
+      "main": [
+        [
+          {
+            "node": "Msg Cadastro Concluído",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg Cadastro Concluído": {
+      "main": [
+        [
+          {
+            "node": "Simulador Envio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Msg Padrão Desconhecido": {
+      "main": [
+        [
+          {
+            "node": "Simulador Envio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": true
+}

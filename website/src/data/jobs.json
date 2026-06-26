@@ -1,0 +1,97 @@
+[
+  {
+    "id": "job_001",
+    "slug": "jovem-aprendiz-administrativo-centro-sp",
+    "title": "Jovem Aprendiz — Administrativo",
+    "company": "Grupo Horizonte",
+    "city": "São Paulo",
+    "state": "SP",
+    "schedule": "Seg a Sex • 4h/dia (Manhã)",
+    "salary": "R$ 850,00",
+    "postedAt": "2026-03-10",
+    "summary": "Apoio às rotinas administrativas, organização de documentos e atendimento interno.",
+    "description": "Você vai apoiar o time administrativo com atividades de arquivo, atualização de planilhas e atendimento interno. Vaga ideal para primeiro emprego com foco em aprendizado e desenvolvimento.",
+    "requirements": [
+      "Ter entre 14 e 24 anos (Lei da Aprendizagem)",
+      "Estar cursando ou ter concluído o Ensino Médio",
+      "Noções básicas de informática"
+    ],
+    "benefits": ["Vale-transporte", "Seguro de vida", "Curso de capacitação"]
+  },
+  {
+    "id": "job_002",
+    "slug": "jovem-aprendiz-atendimento-campinas-sp",
+    "title": "Jovem Aprendiz — Atendimento",
+    "company": "Rede Nova",
+    "city": "Campinas",
+    "state": "SP",
+    "schedule": "Seg a Sex • 6h/dia (Tarde)",
+    "salary": "R$ 1.050,00",
+    "postedAt": "2026-03-12",
+    "summary": "Atendimento ao cliente, suporte no balcão e organização do espaço.",
+    "description": "Atuação em loja com foco em atendimento, organização de produtos e apoio à equipe. Ambiente dinâmico e acolhedor.",
+    "requirements": [
+      "Boa comunicação",
+      "Proatividade e vontade de aprender",
+      "Disponibilidade no período da tarde"
+    ],
+    "benefits": ["Vale-transporte", "Vale-refeição"]
+  },
+  {
+    "id": "job_003",
+    "slug": "jovem-aprendiz-ti-remoto",
+    "title": "Jovem Aprendiz — Suporte de TI (Remoto)",
+    "company": "TechStart",
+    "city": "Remoto",
+    "state": "BR",
+    "schedule": "Seg a Sex • 4h/dia (Flexível)",
+    "salary": "R$ 900,00",
+    "postedAt": "2026-03-14",
+    "summary": "Apoio ao suporte interno, abertura de chamados e testes básicos.",
+    "description": "Você vai ajudar no suporte de TI, registrar demandas, acompanhar prazos e realizar validações simples. Ótima oportunidade para iniciar na área de tecnologia.",
+    "requirements": [
+      "Interesse em tecnologia",
+      "Organização e atenção a detalhes",
+      "Internet estável para trabalho remoto"
+    ],
+    "benefits": ["Auxílio internet", "Curso de capacitação", "Seguro de vida"]
+  },
+  {
+    "id": "job_004",
+    "slug": "jovem-aprendiz-logistica-guarulhos-sp",
+    "title": "Jovem Aprendiz — Logística",
+    "company": "LogiMax",
+    "city": "Guarulhos",
+    "state": "SP",
+    "schedule": "Seg a Sex • 6h/dia (Manhã)",
+    "salary": "R$ 1.100,00",
+    "postedAt": "2026-03-15",
+    "summary": "Separação de materiais, conferência simples e apoio no estoque.",
+    "description": "Apoio ao setor de logística com atividades de conferência, organização e controle de materiais. Rotina prática com acompanhamento e treinamento.",
+    "requirements": [
+      "Ensino Médio em andamento",
+      "Disponibilidade no período da manhã",
+      "Atenção e responsabilidade"
+    ],
+    "benefits": ["Vale-transporte", "Refeitório", "Seguro de vida"]
+  },
+  {
+    "id": "job_005",
+    "slug": "jovem-aprendiz-marketing-curitiba-pr",
+    "title": "Jovem Aprendiz — Marketing",
+    "company": "Aurora Comunicação",
+    "city": "Curitiba",
+    "state": "PR",
+    "schedule": "Seg a Sex • 4h/dia (Tarde)",
+    "salary": "R$ 950,00",
+    "postedAt": "2026-03-16",
+    "summary": "Apoio na criação de conteúdo, organização de demandas e relatórios simples.",
+    "description": "Você vai apoiar a equipe de marketing com organização de pautas, agendamento de posts, levantamento de métricas básicas e suporte administrativo.",
+    "requirements": [
+      "Interesse em comunicação e redes sociais",
+      "Boa escrita",
+      "Noções básicas de pacote Office/Google"
+    ],
+    "benefits": ["Vale-transporte", "Curso de capacitação", "Day off no aniversário"]
+  }
+]

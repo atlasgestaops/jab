@@ -1,0 +1,337 @@
+{
+  "name": "JAB - Agendador de Alertas de Vagas (Frequência & Região)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "trigger-cron-realtime",
+      "name": "Cron Tempo Real (5 min)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [100, 150]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM vagas WHERE status = 'VALIDADO' AND disparada = false;"
+      },
+      "id": "postgres-get-vagas-realtime",
+      "name": "Listar Vagas Novas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [320, 150],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, nome, whatsapp, categorias_vagas, cidade FROM usuarios WHERE whatsapp_configurado = true AND frequencia_envio = 'REALTIME';"
+      },
+      "id": "postgres-get-usuarios-realtime",
+      "name": "Listar Usuários Tempo Real",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [540, 150],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Realiza o match regional e de categorias entre a vaga e os candidatos em Tempo Real\nconst usuarios = $node[\"Listar Usuários Tempo Real\"].json.id ? $node[\"Listar Usuários Tempo Real\"].json : $input.all().map(i => i.json);\nconst vagas = $node[\"Listar Vagas Novas\"].json.id ? [$node[\"Listar Vagas Novas\"].json] : [];\n\nif (usuarios.length === 0 || vagas.length === 0) {\n  return [];\n}\n\nconst disparos = [];\n\nvagas.forEach(vaga => {\n  usuarios.forEach(user => {\n    // 1. Validar match regional (cidade correta ou vaga remota)\n    const matchLocal = vaga.localidade.toLowerCase().includes('remoto') || \n                       (user.cidade && vaga.localidade.toLowerCase().includes(user.cidade.toLowerCase()));\n                       \n    if (!matchLocal) return;\n\n    // 2. Validar match de categoria/interesse\n    // Buscamos se as palavras-chave da vaga batem com o interesse do usuario\n    const interesses = (user.categorias_vagas || '').split(',');\n    let matchCategoria = interesses.length === 0 || user.categorias_vagas === '';\n    \n    interesses.forEach(int => {\n      if (vaga.titulo.toLowerCase().includes(int.toLowerCase()) || \n          vaga.descricao.toLowerCase().includes(int.toLowerCase())) {\n        matchCategoria = true;\n      }\n    });\n\n    if (matchCategoria) {\n      disparos.push({\n        json: {\n          usuario_id: user.id,\n          vaga_id: vaga.id,\n          nome_usuario: user.nome,\n          whatsapp: user.whatsapp,\n          titulo_vaga: vaga.titulo,\n          empresa: vaga.empresa,\n          url_vaga: vaga.url,\n          localidade: vaga.localidade,\n          data_envio: new Date().toISOString()\n        }\n      });\n    }\n  });\n});\n\nreturn disparos;"
+      },
+      "id": "code-match-realtime",
+      "name": "Match de Vagas Realtime",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 150]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simulação de envio do alerta de vaga em tempo real via WhatsApp\nconst item = $input.first().json;\nconst msg = `⚡ **Nova Vaga Encontrada!**\\n\\nOlá, ${item.nome_usuario}! Uma vaga compatível com seu perfil acaba de ser publicada:\\n\\n📌 **${item.titulo_vaga}**\\n🏢 Empresa: ${item.empresa}\\n📍 Local: ${item.localidade}\\n\\n🔗 Inscreva-se aqui: ${item.url_vaga}`;\n\nconsole.log('====================================');\nconsole.log(`[WHATSAPP REALTIME] ENVIADO PARA: ${item.whatsapp}`);\nconsole.log(msg);\nconsole.log('====================================');\n\nreturn {\n  usuario_id: item.usuario_id,\n  vaga_id: item.vaga_id,\n  whatsapp: item.whatsapp,\n  message: msg\n};"
+      },
+      "id": "code-simulate-whatsapp-realtime",
+      "name": "Simular WhatsApp Realtime",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 150]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO disparos_whatsapp (usuario_id, vaga_id, status_envio, data_envio) VALUES ('{{ $json.usuario_id }}'::uuid, '{{ $json.vaga_id }}', 'SIMULADO_ENVIADO', NOW());"
+      },
+      "id": "postgres-log-disparo-realtime",
+      "name": "Registrar Log Disparo",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1200, 150],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE vagas SET disparada = true WHERE id = '{{ $node[\"Match de Vagas Realtime\"].json.vaga_id }}';"
+      },
+      "id": "postgres-mark-vaga-disparada",
+      "name": "Marcar Vaga Disparada",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1420, 150],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cron",
+              "expression": "0 18 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trigger-cron-daily",
+      "name": "Cron Resumo Diário (18h)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [100, 360]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM vagas WHERE status = 'VALIDADO' AND data_validacao >= NOW() - INTERVAL '24 HOURS';"
+      },
+      "id": "postgres-get-vagas-daily",
+      "name": "Buscar Vagas das últimas 24h",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [320, 360],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, nome, whatsapp, categorias_vagas, cidade FROM usuarios WHERE whatsapp_configurado = true AND frequencia_envio = 'DIARIO';"
+      },
+      "id": "postgres-get-usuarios-daily",
+      "name": "Buscar Usuários Diário",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [540, 360],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Compila o resumo de vagas do dia para cada usuário de acordo com região e interesse\nconst usuarios = $node[\"Buscar Usuários Diário\"].json.id ? $node[\"Buscar Usuários Diário\"].json : $input.all().map(i => i.json);\nconst vagas = $node[\"Buscar Vagas das últimas 24h\"].json.id ? [$node[\"Buscar Vagas das últimas 24h\"].json] : [];\n\nif (usuarios.length === 0 || vagas.length === 0) {\n  return [];\n}\n\nconst consolidado = [];\n\nusuarios.forEach(user => {\n  const vagasCompativeis = [];\n  \n  vagas.forEach(vaga => {\n    // Match regional\n    const matchLocal = vaga.localidade.toLowerCase().includes('remoto') || \n                       (user.cidade && vaga.localidade.toLowerCase().includes(user.cidade.toLowerCase()));\n    if (!matchLocal) return;\n\n    // Match categoria\n    const interesses = (user.categorias_vagas || '').split(',');\n    let matchCategoria = interesses.length === 0 || user.categorias_vagas === '';\n    interesses.forEach(int => {\n      if (vaga.titulo.toLowerCase().includes(int.toLowerCase())) {\n        matchCategoria = true;\n      }\n    });\n\n    if (matchCategoria) {\n      vagasCompativeis.push(vaga);\n    }\n  });\n\n  if (vagasCompativeis.length > 0) {\n    consolidado.push({\n      json: {\n        usuario_id: user.id,\n        nome_usuario: user.nome,\n        whatsapp: user.whatsapp,\n        vagas: vagasCompativeis\n      }\n    });\n  }\n});\n\nreturn consolidado;"
+      },
+      "id": "code-match-daily",
+      "name": "Match Resumo Diário",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 360]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formata a mensagem de resumo diario com a lista de vagas encontradas\nconst item = $input.first().json;\n\nlet listaVagas = '';\nitem.vagas.forEach((v, index) => {\n  listaVagas += `\\n${index + 1}. 📌 *${v.titulo}*\\n   🏢 ${v.empresa} (${v.localidade})\\n   🔗 Link: ${v.url}\\n`;\n});\n\nconst msg = `📅 **Seu Resumo Diário de Vagas JAB**\\n\\nOlá, ${item.nome_usuario}! Encontramos as seguintes oportunidades compatíveis hoje:\\n${listaVagas}\\nBoa sorte na sua busca! 🚀`;\n\nconsole.log('====================================');\nconsole.log(`[WHATSAPP DIARIO] ENVIADO PARA: ${item.whatsapp}`);\nconsole.log(msg);\nconsole.log('====================================');\n\nreturn {\n  usuario_id: item.usuario_id,\n  whatsapp: item.whatsapp,\n  vagas_ids: item.vagas.map(v => v.id),\n  message: msg\n};"
+      },
+      "id": "code-simulate-whatsapp-daily",
+      "name": "Simular WhatsApp Diário",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 360]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Grava multiplos logs de disparos (um para cada vaga enviada no resumo)\nconst data = $node[\"Simular WhatsApp Diário\"].json;\nconst queries = data.vagas_ids.map(vagaId => {\n  return {\n    json: {\n      query: `INSERT INTO disparos_whatsapp (usuario_id, vaga_id, status_envio, data_envio) VALUES ('${data.usuario_id}'::uuid, '${vagaId}', 'SIMULADO_DIARIO_ENVIADO', NOW());`\n    }\n  };\n});\nreturn queries;"
+      },
+      "id": "code-generate-daily-logs",
+      "name": "Preparar Queries Logs Diários",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 360]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.query }}"
+      },
+      "id": "postgres-save-daily-logs",
+      "name": "Gravar Logs Diários",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [1420, 360],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron Tempo Real (5 min)": {
+      "main": [
+        [
+          {
+            "node": "Listar Vagas Novas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Vagas Novas": {
+      "main": [
+        [
+          {
+            "node": "Listar Usuários Tempo Real",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Usuários Tempo Real": {
+      "main": [
+        [
+          {
+            "node": "Match de Vagas Realtime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match de Vagas Realtime": {
+      "main": [
+        [
+          {
+            "node": "Simular WhatsApp Realtime",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simular WhatsApp Realtime": {
+      "main": [
+        [
+          {
+            "node": "Registrar Log Disparo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Log Disparo": {
+      "main": [
+        [
+          {
+            "node": "Marcar Vaga Disparada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron Resumo Diário (18h)": {
+      "main": [
+        [
+          {
+            "node": "Buscar Vagas das últimas 24h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Vagas das últimas 24h": {
+      "main": [
+        [
+          {
+            "node": "Buscar Usuários Diário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Usuários Diário": {
+      "main": [
+        [
+          {
+            "node": "Match Resumo Diário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Resumo Diário": {
+      "main": [
+        [
+          {
+            "node": "Simular WhatsApp Diário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simular WhatsApp Diário": {
+      "main": [
+        [
+          {
+            "node": "Preparar Queries Logs Diários",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Queries Logs Diários": {
+      "main": [
+        [
+          {
+            "node": "Gravar Logs Diários",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": true
+}

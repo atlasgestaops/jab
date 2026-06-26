@@ -1,1 +1,22 @@
 /* Estilos locais do App */
+
+.selection-btn-hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.selection-btn-hover:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--primary-color) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.company-panel form input:focus, 
+.company-panel form textarea:focus,
+.loginCard input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}

@@ -300,6 +300,213 @@
           "id": "supabase-postgres-credentials"
         }
       }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "empresas/cadastro",
+        "options": {}
+      },
+      "id": "webhook-post-empresas-cadastro",
+      "name": "POST /empresas/cadastro",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 1100]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';"
+      },
+      "id": "postgres-check-empresa-exists",
+      "name": "Verificar se Empresa Existe",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [320, 1100],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all();\nconst body = $node[\"POST /empresas/cadastro\"].json.body;\n\nif (input.length > 0) {\n  return { json: { exists: true } };\n}\n\n// Limpar CNPJ\nconst cnpjLimpo = body.cnpj.replace(/\\D/g, '');\nconst id = 'emp_' + cnpjLimpo;\nconst token = 'tok_comp_' + Math.random().toString(36).substr(2, 9) + Math.random().toString(36).substr(2, 9);\n\nreturn {\n  json: {\n    exists: false,\n    id,\n    cnpj: body.cnpj,\n    nome_fantasia: body.nome_fantasia,\n    email: body.email,\n    telefone: body.telefone,\n    site: body.site || '',\n    token_acesso: token\n  }\n};"
+      },
+      "id": "code-validate-company",
+      "name": "Validar Nova Empresa e Token",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [540, 1100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "mix"
+          },
+          "conditions": [
+            {
+              "id": "check-exists",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-company-exists",
+      "name": "Empresa Já Existe?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [760, 1100]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO empresas (id, cnpj, nome_fantasia, email, telefone, site, token_acesso) VALUES ('{{ $json.id }}', '{{ $json.cnpj }}', '{{ $json.nome_fantasia }}', '{{ $json.email }}', '{{ $json.telefone }}', '{{ $json.site }}', '{{ $json.token_acesso }}') RETURNING id, cnpj, nome_fantasia, email, telefone, site, token_acesso;"
+      },
+      "id": "postgres-insert-company",
+      "name": "Inserir Empresa Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [980, 1060],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: false,\n  message: 'Este CNPJ ou E-mail já está cadastrado como empresa parceira!'\n};"
+      },
+      "id": "code-response-company-exists",
+      "name": "Erro Empresa Duplicada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 1160]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vagas/cadastrar",
+        "options": {}
+      },
+      "id": "webhook-post-vagas-cadastrar",
+      "name": "POST /vagas/cadastrar",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 1300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $node[\"POST /vagas/cadastrar\"].json.body;\n\n// Gerar um hash único para a vaga manual\nconst seed = body.url || (body.titulo + body.empresa + Date.now().toString());\nlet hash = 0;\nfor (let i = 0; i < seed.length; i++) {\n  const char = seed.charCodeAt(i);\n  hash = ((hash << 5) - hash) + char;\n  hash = hash & hash;\n}\nconst uniqueId = 'vaga_man_' + Math.abs(hash).toString(36) + Math.random().toString(36).substr(2, 5);\n\nreturn {\n  json: {\n    id: uniqueId,\n    body\n  }\n};"
+      },
+      "id": "code-generate-vaga-id",
+      "name": "Gerar ID Vaga Manual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [320, 1300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, empresa_id) VALUES ('{{ $json.id }}', '{{ $json.body.titulo }}', '{{ $json.body.empresa }}', '{{ $json.body.localidade }}', '{{ $json.body.descricao }}', '{{ $json.body.url }}', 'Parceiro', 'PENDENTE', '{{ $json.body.empresa_id }}') RETURNING id;"
+      },
+      "id": "postgres-insert-vaga-parceiro",
+      "name": "Inserir Vaga Parceiro",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [540, 1300],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  message: 'Sua vaga de Jovem Aprendiz foi cadastrada com sucesso! Ela foi enviada para a fila de moderação e será publicada após validação.'\n};"
+      },
+      "id": "code-return-vaga-success",
+      "name": "Retornar Sucesso Vaga",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [760, 1300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "empresas/vagas",
+        "options": {}
+      },
+      "id": "webhook-get-empresas-vagas",
+      "name": "GET /empresas/vagas",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 1460]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM vagas WHERE empresa_id = '{{ $json.query.empresa_id }}' ORDER BY data_descoberta DESC;"
+      },
+      "id": "postgres-get-company-jobs",
+      "name": "Buscar Vagas da Empresa",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [320, 1460],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "empresas/login",
+        "options": {}
+      },
+      "id": "webhook-post-empresas-login",
+      "name": "POST /empresas/login",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 1620]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, cnpj, nome_fantasia, email, telefone, site, token_acesso FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';"
+      },
+      "id": "postgres-login-company",
+      "name": "Buscar Empresa Login",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [320, 1620],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.all();\nif (results.length === 0 || !results[0].json.id) {\n  throw new Error('Empresa parceira não encontrada com esse e-mail ou CNPJ.');\n}\nreturn results[0].json;"
+      },
+      "id": "code-return-company-login",
+      "name": "Retornar Empresa Login",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [540, 1620]
     }
   ],
   "connections": {
@@ -465,6 +672,123 @@
         [
           {
             "node": "Buscar Preferências Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /empresas/cadastro": {
+      "main": [
+        [
+          {
+            "node": "Verificar se Empresa Existe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar se Empresa Existe": {
+      "main": [
+        [
+          {
+            "node": "Validar Nova Empresa e Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Nova Empresa e Token": {
+      "main": [
+        [
+          {
+            "node": "Empresa Já Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empresa Já Existe?": {
+      "main": [
+        [
+          {
+            "node": "Inserir Empresa Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Erro Empresa Duplicada",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "POST /vagas/cadastrar": {
+      "main": [
+        [
+          {
+            "node": "Gerar ID Vaga Manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar ID Vaga Manual": {
+      "main": [
+        [
+          {
+            "node": "Inserir Vaga Parceiro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Vaga Parceiro": {
+      "main": [
+        [
+          {
+            "node": "Retornar Sucesso Vaga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /empresas/vagas": {
+      "main": [
+        [
+          {
+            "node": "Buscar Vagas da Empresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /empresas/login": {
+      "main": [
+        [
+          {
+            "node": "Buscar Empresa Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Empresa Login": {
+      "main": [
+        [
+          {
+            "node": "Retornar Empresa Login",
             "type": "main",
             "index": 0
           }

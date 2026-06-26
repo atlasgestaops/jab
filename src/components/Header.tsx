@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 
 interface HeaderProps {
-  currentRoute: 'portal' | 'admin' | 'guide' | 'profile';
-  onRouteChange: (route: 'portal' | 'admin' | 'guide' | 'profile') => void;
+  currentRoute: 'portal' | 'admin' | 'guide' | 'profile' | 'company-panel';
+  onRouteChange: (route: 'portal' | 'admin' | 'guide' | 'profile' | 'company-panel') => void;
   pendingCount: number;
   candidateJobsCount: number;
+  hasCompanySession: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
   currentRoute, 
   onRouteChange, 
   pendingCount, 
-  candidateJobsCount 
+  candidateJobsCount,
+  hasCompanySession
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleRouteChange = (route: 'portal' | 'admin' | 'guide' | 'profile') => {
+  const handleRouteChange = (route: 'portal' | 'admin' | 'guide' | 'profile' | 'company-panel') => {
     onRouteChange(route);
     setIsMenuOpen(false);
   };
@@ -67,15 +69,26 @@ export const Header: React.FC<HeaderProps> = ({
             Comece por Aqui
           </button>
 
-          <button 
-            onClick={() => handleRouteChange('profile')}
-            className={`header-nav-button header-profile-button ${currentRoute === 'profile' ? 'active-profile' : ''}`}
-          >
-            Meu Painel 💼
-            {candidateJobsCount > 0 && (
-              <span className="header-profile-badge">{candidateJobsCount}</span>
-            )}
-          </button>
+          {/* Se a empresa estiver logada, exibe o painel dela de forma destacada */}
+          {hasCompanySession ? (
+            <button 
+              onClick={() => handleRouteChange('company-panel')}
+              className={`header-nav-button header-company-button ${currentRoute === 'company-panel' ? 'active-profile' : ''}`}
+              style={{ borderColor: 'var(--primary-color)' }}
+            >
+              Painel Empresa 🏢
+            </button>
+          ) : (
+            <button 
+              onClick={() => handleRouteChange('profile')}
+              className={`header-nav-button header-profile-button ${currentRoute === 'profile' ? 'active-profile' : ''}`}
+            >
+              Meu Painel 💼
+              {candidateJobsCount > 0 && (
+                <span className="header-profile-badge">{candidateJobsCount}</span>
+              )}
+            </button>
+          )}
           
           <button 
             onClick={() => handleRouteChange('admin')}

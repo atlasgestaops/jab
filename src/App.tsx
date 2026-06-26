@@ -702,243 +702,48 @@ function App() {
       )}
 
       {currentRoute === 'profile' && (
-        /* ════════════════ ÁREA DE LOGIN / CADASTRO / CANDIDATO ════════════════ */
-        currentUser ? (
-          <CandidateArea 
-            applications={applications}
-            onUpdateStatus={handleUpdateStatus}
-            onUpdateNotes={handleUpdateNotes}
-            onRemoveJob={handleRemoveJob}
-            onNavigateToPortal={() => {
-              setCurrentRoute('portal');
-              window.scrollTo({ top: 0 });
-            }}
-            currentUser={currentUser}
-            onRefreshUserStatus={refreshUserStatus}
-          />
-        ) : (
-          <main className="container fade-in" style={{ padding: '4rem var(--space-sm)' }}>
-            <div className="glass" style={styles.loginCard}>
-              {loginRole === null && (
-                <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-                  <span style={{ fontSize: '3rem' }}>🌱</span>
-                  <h2 style={{ fontSize: '1.8rem', marginTop: '1rem', color: 'var(--color-dark)' }}>Bem-vindo ao JAB</h2>
-                  <p style={{ color: '#9ca3af', marginBottom: '2rem' }}>Como você gostaria de acessar a nossa plataforma?</p>
-                  
-                  <div style={styles.selectionGrid}>
-                    <button 
-                      onClick={() => setLoginRole('candidate')} 
-                      style={styles.selectionButton}
-                      className="selection-btn-hover"
-                    >
-                      <span style={{ fontSize: '2rem', display: 'block', marginBottom: '0.5rem' }}>💼</span>
-                      <strong style={{ display: 'block', fontSize: '1.1rem', marginBottom: '0.25rem' }}>Sou Candidato</strong>
-                      <span style={styles.selectionDesc}>Buscar vagas e gerenciar alertas de WhatsApp</span>
-                    </button>
-                    
-                    <button 
-                      onClick={() => { setLoginRole('company'); setIsLoginMode(true); }} 
-                      style={styles.selectionButton}
-                      className="selection-btn-hover"
-                    >
-                      <span style={{ fontSize: '2rem', display: 'block', marginBottom: '0.5rem' }}>🏢</span>
-                      <strong style={{ display: 'block', fontSize: '1.1rem', marginBottom: '0.25rem' }}>Sou Empresa Recrutadora</strong>
-                      <span style={styles.selectionDesc}>Anunciar vagas de Jovem Aprendiz</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {loginRole === 'candidate' && (
-                <div>
-                  <button onClick={() => setLoginRole(null)} style={styles.backBtn}>← Voltar</button>
-                  <h3 style={{ fontSize: '1.5rem', marginTop: '1rem', color: 'var(--color-dark)' }}>Área do Candidato</h3>
-                  <p style={{ color: '#9ca3af', marginBottom: '1.5rem', fontSize: '0.9rem', lineHeight: '1.4' }}>
-                    Cadastre seu nome e e-mail para receber as vagas direto no seu e-mail e habilitar as notificações do WhatsApp.
-                  </p>
-                  
-                  <form onSubmit={handleSubscribeForm} style={styles.formInline}>
-                    <div style={styles.formGroup}>
-                      <label style={styles.label}>Seu Nome *</label>
-                      <input 
-                        type="text" 
-                        placeholder="Nome completo..." 
-                        value={subName}
-                        onChange={(e) => setSubName(e.target.value)}
-                        required
-                        style={styles.input}
-                      />
-                    </div>
-                    <div style={styles.formGroup}>
-                      <label style={styles.label}>Seu E-mail *</label>
-                      <input 
-                        type="email" 
-                        placeholder="seu-email@dominio.com" 
-                        value={subEmail}
-                        onChange={(e) => setSubEmail(e.target.value)}
-                        required
-                        style={styles.input}
-                      />
-                    </div>
-                    <button type="submit" className="btn-primary" disabled={submittingSub} style={{ padding: '0.8rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
-                      {submittingSub ? 'Enviando e-mail...' : 'Cadastrar e Receber Alertas'}
-                    </button>
-                  </form>
-                </div>
-              )}
-
-              {loginRole === 'company' && (
-                <div>
-                  <button onClick={() => setLoginRole(null)} style={styles.backBtn}>← Voltar</button>
-                  
-                  {isLoginMode ? (
-                    /* Formulário de Login de Empresa */
-                    <div>
-                      <h3 style={{ fontSize: '1.5rem', marginTop: '1rem', color: 'var(--color-dark)' }}>Login da Empresa Parceira</h3>
-                      <p style={{ color: '#9ca3af', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                        Insira o E-mail Comercial ou o CNPJ cadastrado da sua empresa para acessar.
-                      </p>
-                      
-                      <form onSubmit={handleCompanyLogin} style={styles.formInline}>
-                        <div style={styles.formGroup}>
-                          <label style={styles.label}>E-mail ou CNPJ Cadastrado *</label>
-                          <input 
-                            type="text" 
-                            placeholder="E-mail ou CNPJ da empresa..." 
-                            value={companyLoginInput}
-                            onChange={(e) => setCompanyLoginInput(e.target.value)}
-                            required
-                            style={styles.input}
-                          />
-                        </div>
-                        
-                        <button type="submit" className="btn-primary" disabled={submittingComp} style={{ padding: '0.8rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
-                          {submittingComp ? 'Autenticando...' : 'Acessar Painel da Empresa'}
-                        </button>
-                      </form>
-                      
-                      <p style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: '#9ca3af' }}>
-                        Sua empresa ainda não é parceira?{' '}
-                        <button 
-                          onClick={() => setIsLoginMode(false)} 
-                          style={{ background: 'none', border: 'none', color: 'var(--primary-color)', textDecoration: 'underline', cursor: 'pointer', fontWeight: 'bold' }}
-                        >
-                          Cadastre-se agora
-                        </button>
-                      </p>
-                    </div>
-                  ) : (
-                    /* Formulário de Cadastro de Empresa */
-                    <div>
-                      <h3 style={{ fontSize: '1.5rem', marginTop: '1rem', color: 'var(--color-dark)' }}>Cadastro de Empresa Recrutadora</h3>
-                      <p style={{ color: '#9ca3af', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                        Registre sua empresa para começar a publicar vagas de Jovem Aprendiz no portal JAB.
-                      </p>
-                      
-                      <form onSubmit={handleRegisterCompany} style={styles.formInline}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                          <div style={styles.formGroup}>
-                            <label style={styles.label}>CNPJ *</label>
-                            <input 
-                              type="text" 
-                              placeholder="00.000.000/0000-00" 
-                              value={compCnpj}
-                              onChange={(e) => setCompCnpj(e.target.value)}
-                              required
-                              style={styles.input}
-                            />
-                          </div>
-                          
-                          <div style={styles.formGroup}>
-                            <label style={styles.label}>Nome Fantasia *</label>
-                            <input 
-                              type="text" 
-                              placeholder="Razão Social ou Fantasia..." 
-                              value={compName}
-                              onChange={(e) => setCompName(e.target.value)}
-                              required
-                              style={styles.input}
-                            />
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                          <div style={styles.formGroup}>
-                            <label style={styles.label}>E-mail Comercial *</label>
-                            <input 
-                              type="email" 
-                              placeholder="recrutamento@empresa.com" 
-                              value={compEmail}
-                              onChange={(e) => setCompEmail(e.target.value)}
-                              required
-                              style={styles.input}
-                            />
-                          </div>
-                          
-                          <div style={styles.formGroup}>
-                            <label style={styles.label}>Telefone de Contato *</label>
-                            <input 
-                              type="tel" 
-                              placeholder="(00) 00000-0000" 
-                              value={compPhone}
-                              onChange={(e) => setCompPhone(e.target.value)}
-                              required
-                              style={styles.input}
-                            />
-                          </div>
-                        </div>
-
-                        <div style={styles.formGroup}>
-                          <label style={styles.label}>Site da Empresa (Opcional)</label>
-                          <input 
-                            type="url" 
-                            placeholder="https://www.empresa.com" 
-                            value={compSite}
-                            onChange={(e) => setCompSite(e.target.value)}
-                            style={styles.input}
-                          />
-                        </div>
-                        
-                        <button type="submit" className="btn-primary" disabled={submittingComp} style={{ padding: '0.8rem', fontWeight: 'bold', marginTop: '0.5rem' }}>
-                          {submittingComp ? 'Cadastrando...' : 'Cadastrar Empresa Parceira'}
-                        </button>
-                      </form>
-
-                      <p style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: '#9ca3af' }}>
-                        Já possui cadastro?{' '}
-                        <button 
-                          onClick={() => setIsLoginMode(true)} 
-                          style={{ background: 'none', border: 'none', color: 'var(--primary-color)', textDecoration: 'underline', cursor: 'pointer', fontWeight: 'bold' }}
-                        >
-                          Faça login aqui
-                        </button>
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </main>
-        )
+        /* ════════════════ ÁREA DO CANDIDATO ════════════════ */
+        <CandidateArea 
+          applications={applications}
+          onUpdateStatus={handleUpdateStatus}
+          onUpdateNotes={handleUpdateNotes}
+          onRemoveJob={handleRemoveJob}
+          onNavigateToPortal={() => {
+            setCurrentRoute('portal');
+            window.scrollTo({ top: 0 });
+          }}
+          currentUser={currentUser || {
+            id: 'guest_candidate_id',
+            nome: 'Candidato Visitante',
+            email: 'visitante@candidato.com',
+            whatsapp_configurado: true,
+            whatsapp: '5511999999999',
+            cidade: 'São Paulo',
+            estado: 'SP',
+            categorias_vagas: 'Administrativo, Tecnologia',
+            frequencia_envio: 'Diária',
+            token_confirmacao: 'tok_visitante'
+          }}
+          onRefreshUserStatus={refreshUserStatus}
+        />
       )}
 
       {currentRoute === 'company-panel' && (
         /* ════════════════ ÁREA DA EMPRESA PARCEIRA ════════════════ */
-        currentCompany ? (
-          <CompanyArea 
-            company={currentCompany}
-            onLogout={handleCompanyLogout}
-            apiUrl={API_URL}
-            showToast={showToast}
-          />
-        ) : (
-          <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <h3>Sessão encerrada</h3>
-            <button className="btn-primary" onClick={() => { setCurrentRoute('profile'); setLoginRole('company'); setIsLoginMode(true); }}>
-              Ir para Login de Empresa
-            </button>
-          </div>
-        )
+        <CompanyArea 
+          company={currentCompany || {
+            id: 'guest_company_id',
+            cnpj: '12.345.678/0001-90',
+            nome_fantasia: 'Empresa Visitante Ltda',
+            email: 'recrutamento@visitante.com',
+            telefone: '(11) 99999-9999',
+            site: 'https://visitante.com',
+            token_acesso: 'tok_comp_visitante'
+          }}
+          onLogout={handleCompanyLogout}
+          apiUrl={API_URL}
+          showToast={showToast}
+        />
       )}
 
       {/* Toast Notification de Feedback */}

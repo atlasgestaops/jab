@@ -11,6 +11,7 @@
 - [x] Versionamento e envio da branch `main` do projeto local para o repositório remoto no GitHub.
 - [x] Sincronização inicial e deploys criados no painel do Coolify para `jab-frontend` e `jab-n8n`.
 - [x] Implementação do portal e painel de empresas parceiras com CNPJ, login e cadastro manual de vagas de Jovem Aprendiz.
+- [x] Remoção temporária de restrições de login para prover acesso irrestrito e facilitar testes manuais de ponta a ponta.
 - [x] Atualização e preenchimento detalhado do `task_plan.md` e do `manager.md` para integração com a plataforma de SaaS.
 
 ### Bugs / Impedimentos:

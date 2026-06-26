@@ -55,6 +55,7 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
 
   // Estados do formulário de nova vaga
   const [jobTitle, setJobTitle] = useState('');
+  const [jobCompany, setJobCompany] = useState(company.nome_fantasia || '');
   const [jobUrl, setJobUrl] = useState('');
   const [jobDesc, setJobDesc] = useState('');
   const [submittingJob, setSubmittingJob] = useState(false);
@@ -122,11 +123,12 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
 
   useEffect(() => {
     loadCompanyJobs();
-  }, [company.id]);
+    setJobCompany(company.nome_fantasia || '');
+  }, [company.id, company.nome_fantasia]);
 
   const handleSubmitJob = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!jobTitle || !selectedState || (selectedState !== 'REMOTO' && !selectedCity) || !jobDesc) {
+    if (!jobTitle || !jobCompany || !selectedState || (selectedState !== 'REMOTO' && !selectedCity) || !jobDesc) {
       showToast("Por favor, preencha os campos obrigatórios.");
       return;
     }
@@ -143,7 +145,7 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           titulo: jobTitle,
-          empresa: company.nome_fantasia,
+          empresa: jobCompany,
           localidade: formattedLocation,
           url: jobUrl,
           descricao: jobDesc,
@@ -155,6 +157,7 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
         showToast("Vaga enviada para a fila de moderação! 🎉");
         // Limpar formulário
         setJobTitle('');
+        setJobCompany(company.nome_fantasia || '');
         setSelectedState('');
         setSelectedCity('');
         setJobUrl('');
@@ -203,6 +206,18 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
                 placeholder="Ex: Jovem Aprendiz Administrativo"
                 value={jobTitle}
                 onChange={(e) => setJobTitle(e.target.value)}
+                required
+                style={styles.input}
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Nome da Empresa Contratante *</label>
+              <input
+                type="text"
+                placeholder="Ex: Coca-Cola, Itaú ou sua própria empresa"
+                value={jobCompany}
+                onChange={(e) => setJobCompany(e.target.value)}
                 required
                 style={styles.input}
               />

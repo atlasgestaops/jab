@@ -18,16 +18,89 @@ interface CompanyAreaProps {
   showToast: (message: string) => void;
 }
 
+// Lista de Estados do Brasil (UFs)
+const BRAZIL_STATES = [
+  { sigla: 'AC', nome: 'Acre' },
+  { sigla: 'AL', nome: 'Alagoas' },
+  { sigla: 'AP', nome: 'Amapá' },
+  { sigla: 'AM', nome: 'Amazonas' },
+  { sigla: 'BA', nome: 'Bahia' },
+  { sigla: 'CE', nome: 'Ceará' },
+  { sigla: 'DF', nome: 'Distrito Federal' },
+  { sigla: 'ES', nome: 'Espírito Santo' },
+  { sigla: 'GO', nome: 'Goiás' },
+  { sigla: 'MA', nome: 'Maranhão' },
+  { sigla: 'MT', nome: 'Mato Grosso' },
+  { sigla: 'MS', nome: 'Mato Grosso do Sul' },
+  { sigla: 'MG', nome: 'Minas Gerais' },
+  { sigla: 'PA', nome: 'Pará' },
+  { sigla: 'PB', nome: 'Paraíba' },
+  { sigla: 'PR', nome: 'Paraná' },
+  { sigla: 'PE', nome: 'Pernambuco' },
+  { sigla: 'PI', nome: 'Piauí' },
+  { sigla: 'RJ', nome: 'Rio de Janeiro' },
+  { sigla: 'RN', nome: 'Rio Grande do Norte' },
+  { sigla: 'RS', nome: 'Rio Grande do Sul' },
+  { sigla: 'RO', nome: 'Rondônia' },
+  { sigla: 'RR', nome: 'Roraima' },
+  { sigla: 'SC', nome: 'Santa Catarina' },
+  { sigla: 'SP', nome: 'São Paulo' },
+  { sigla: 'SE', nome: 'Sergipe' },
+  { sigla: 'TO', nome: 'Tocantins' }
+];
+
 export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAreaProps) {
   const [companyJobs, setCompanyJobs] = useState<Job[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
 
   // Estados do formulário de nova vaga
   const [jobTitle, setJobTitle] = useState('');
-  const [jobLocation, setJobLocation] = useState('');
   const [jobUrl, setJobUrl] = useState('');
   const [jobDesc, setJobDesc] = useState('');
   const [submittingJob, setSubmittingJob] = useState(false);
+
+  // Estados do Dropdown Encadeado de Localidades (IBGE)
+  const [selectedState, setSelectedState] = useState('');
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState('');
+  const [loadingCities, setLoadingCities] = useState(false);
+
+  // Carrega as cidades da API do IBGE sempre que o estado selecionado mudar
+  useEffect(() => {
+    if (!selectedState) {
+      setCities([]);
+      setSelectedCity('');
+      return;
+    }
+
+    if (selectedState === 'REMOTO') {
+      setCities([]);
+      setSelectedCity('Remoto');
+      return;
+    }
+
+    const fetchCities = async () => {
+      setLoadingCities(true);
+      try {
+        const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedState}/municipios`);
+        if (!res.ok) throw new Error("Erro ao buscar cidades");
+        const data = await res.json();
+        
+        // Mapeia e ordena as cidades em ordem alfabética
+        const cityNames = data.map((c: any) => c.nome).sort((a: string, b: string) => a.localeCompare(b, 'pt-BR'));
+        setCities(cityNames);
+        setSelectedCity(cityNames[0] || '');
+      } catch (e) {
+        console.error("Erro ao carregar cidades do IBGE", e);
+        showToast("Erro ao carregar lista de cidades.");
+        setCities([]);
+      } finally {
+        setLoadingCities(false);
+      }
+    };
+
+    fetchCities();
+  }, [selectedState]);
 
   // Carrega as vagas cadastradas por essa empresa
   const loadCompanyJobs = async () => {
@@ -53,10 +126,15 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
 
   const handleSubmitJob = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!jobTitle || !jobLocation || !jobDesc) {
+    if (!jobTitle || !selectedState || (selectedState !== 'REMOTO' && !selectedCity) || !jobDesc) {
       showToast("Por favor, preencha os campos obrigatórios.");
       return;
     }
+
+    // Formata a localidade final (ex: "Porto Alegre - RS" ou "Remoto")
+    const formattedLocation = selectedState === 'REMOTO' 
+      ? 'Remoto' 
+      : `${selectedCity} - ${selectedState}`;
 
     setSubmittingJob(true);
     try {
@@ -66,7 +144,7 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
         body: JSON.stringify({
           titulo: jobTitle,
           empresa: company.nome_fantasia,
-          localidade: jobLocation,
+          localidade: formattedLocation,
           url: jobUrl,
           descricao: jobDesc,
           empresa_id: company.id
@@ -77,7 +155,8 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
         showToast("Vaga enviada para a fila de moderação! 🎉");
         // Limpar formulário
         setJobTitle('');
-        setJobLocation('');
+        setSelectedState('');
+        setSelectedCity('');
         setJobUrl('');
         setJobDesc('');
         // Recarregar a lista
@@ -129,16 +208,50 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
               />
             </div>
 
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Cidade e Estado / UF *</label>
-              <input
-                type="text"
-                placeholder="Ex: Porto Alegre - RS ou Remoto"
-                value={jobLocation}
-                onChange={(e) => setJobLocation(e.target.value)}
-                required
-                style={styles.input}
-              />
+            {/* Selects Encadeados de Localidade (Estado -> Cidade) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Estado / Região *</label>
+                <select
+                  value={selectedState}
+                  onChange={(e) => setSelectedState(e.target.value)}
+                  required
+                  style={styles.select}
+                >
+                  <option value="">Selecione...</option>
+                  <option value="REMOTO">Trabalho Remoto</option>
+                  {BRAZIL_STATES.map((state) => (
+                    <option key={state.sigla} value={state.sigla}>
+                      {state.nome} ({state.sigla})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Cidade *</label>
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  disabled={!selectedState || selectedState === 'REMOTO' || loadingCities}
+                  required={selectedState && selectedState !== 'REMOTO'}
+                  style={styles.select}
+                >
+                  {selectedState === 'REMOTO' ? (
+                    <option value="Remoto">Remoto</option>
+                  ) : !selectedState ? (
+                    <option value="">Aguardando estado...</option>
+                  ) : loadingCities ? (
+                    <option value="">Buscando cidades...</option>
+                  ) : (
+                    cities.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
             </div>
 
             <div style={styles.formGroup}>
@@ -304,6 +417,15 @@ const styles = {
     backgroundColor: '#00000033',
     color: '#ffffff',
     outline: 'none',
+  },
+  select: {
+    padding: '0.75rem',
+    borderRadius: '8px',
+    border: '1px solid var(--border-color)',
+    backgroundColor: '#0c0f16',
+    color: '#ffffff',
+    outline: 'none',
+    cursor: 'pointer',
   },
   textarea: {
     padding: '0.75rem',

@@ -58,9 +58,38 @@ graph TD
 
 ---
 
-## 📥 2. Fluxo de Triagem e Moderação Administrativa
+## 🏢 2. Fluxo de Cadastro de Empresas e Vagas Manuais (Painel Empresa)
 
-Este fluxo descreve o processo de captura automática de vagas pelo robô e a curadoria humana realizada pelo moderador antes da publicação online.
+Este fluxo detalha como empresas parceiras se cadastram e enviam vagas diretamente pelo portal, contornando a necessidade de extração do robô.
+
+```mermaid
+graph TD
+    A[Acessa Painel da Empresa] --> B{Tem cadastro?}
+    
+    %% Cadastro de Empresa
+    B -->|Não| C[Preenche CNPJ, Nome, E-mail]
+    C -->|POST /empresas/cadastro| D[n8n Valida e Cria Empresa]
+    D -->|Retorna Token| E[Empresa Logada]
+    
+    %% Login
+    B -->|Sim| F[Faz Login com E-mail ou CNPJ]
+    F -->|POST /empresas/login| E
+    
+    %% Envio de Vaga
+    E --> G[Acessa Dashboard de Vagas]
+    G --> H[Preenche Formulário Nova Vaga]
+    H -->|POST /vagas/cadastrar| I[n8n API Recebe Dados]
+    I --> J[Gera Hash de ID Único]
+    J --> K[(Salva Vaga no Supabase)]
+    K --> L[Vaga entra com Status PENDENTE]
+    L --> M[Fila de Moderação do Admin]
+```
+
+---
+
+## 📥 3. Fluxo de Triagem e Moderação Administrativa
+
+Este fluxo descreve o processo de captura automática de vagas pelo robô e também das vagas enviadas manualmente, que passam por curadoria humana antes da publicação online.
 
 ```mermaid
 sequenceDiagram
@@ -70,11 +99,15 @@ sequenceDiagram
     participant Admin as Painel de Moderação (/admin)
     participant Portal as Portal Público (Candidato)
     
-    Note over Scraper, DB: Etapa 1: Coleta Automática (24/7)
+    Note over Scraper, DB: Etapa 1.1: Coleta Automática (24/7)
     Scraper->>DB: Lê fontes ativas de busca
     Scraper->>Scraper: Raspa portais e filtra termos ('jovem aprendiz')
     Scraper->>DB: Verifica duplicidade por hash de URL (id)
     Scraper->>DB: Insere nova vaga (Status: PENDENTE)
+    
+    Note over Portal, DB: Etapa 1.2: Cadastro Manual (Painel Empresa)
+    Portal->>DB: Envia formulário de vaga
+    DB->>DB: Insere vaga parceiro (Status: PENDENTE)
     
     Note over DB, Admin: Etapa 2: Curadoria Humana
     Admin->>DB: Carrega vagas com status PENDENTE
@@ -93,7 +126,7 @@ sequenceDiagram
 
 ---
 
-## ⚡ 3. Integração de Eventos e Gatilhos de Alerta
+## ⚡ 4. Integração de Eventos e Gatilhos de Alerta
 
 Quando uma vaga é aprovada no Painel de Moderação, a Camada de Serviços (n8n) executa a distribuição dos alertas:
 

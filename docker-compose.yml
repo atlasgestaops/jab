@@ -9,6 +9,7 @@ services:
     environment:
       - N8N_SECURE_COOKIE=false
       - GENERIC_TIMEZONE=America/Sao_Paulo
+      - N8N_CORS_ALLOWED_ORIGINS=*
     volumes:
       - n8n_data:/home/node/.n8n
       - ./data:/data
@@ -20,7 +21,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://localhost:5678/webhook
+      - VITE_API_URL=https://jab-api.atlasbot.tech/webhook
     volumes:
       - .:/app
       - /app/node_modules

@@ -1,0 +1,910 @@
+{
+  "name": "JAB - API Backend (Webhooks & Supabase)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "vagas",
+        "options": {}
+      },
+      "id": "webhook-get-vagas",
+      "name": "GET /vagas",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM vagas WHERE status != 'REJEITADO' ORDER BY data_descoberta DESC;"
+      },
+      "id": "postgres-get-vagas",
+      "name": "Listar Vagas Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        100
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vagas/moderacao",
+        "options": {}
+      },
+      "id": "webhook-post-moderacao",
+      "name": "POST /vagas/moderacao",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE vagas SET status = '{{ $json.body.status }}', data_validacao = NOW() WHERE id = '{{ $json.body.id }}';"
+      },
+      "id": "postgres-update-vaga",
+      "name": "Atualizar Status Vaga",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        260
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  message: 'Moderação da vaga registrada no Supabase!'\n};"
+      },
+      "id": "code-response-moderacao",
+      "name": "Retornar Sucesso Moderação",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "usuarios/cadastro",
+        "options": {}
+      },
+      "id": "webhook-post-usuarios-cadastro",
+      "name": "POST /usuarios/cadastro",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id FROM usuarios WHERE email = '{{ $json.body.email }}';"
+      },
+      "id": "postgres-check-user-exists",
+      "name": "Verificar se E-mail Existe",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        440
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all();\nconst email = $node[\"POST /usuarios/cadastro\"].json.body.email;\nconst nome = $node[\"POST /usuarios/cadastro\"].json.body.nome;\n\n// Se o array de retorno do SQL tiver elementos, o usuário já existe\nif (input.length > 0) {\n  return { json: { exists: true } };\n}\n\n// Gerar um token de confirmação aleatório\nconst token = 'tok_' + Math.random().toString(36).substr(2, 9) + Math.random().toString(36).substr(2, 9);\nreturn {\n  json: {\n    exists: false,\n    nome,\n    email,\n    token\n  }\n};"
+      },
+      "id": "code-generate-token",
+      "name": "Validar Novo Usuário e Token",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "mix"
+          },
+          "conditions": [
+            {
+              "id": "check-exists",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-user-exists",
+      "name": "Usuário Já Existe?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        760,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO usuarios (nome, email, token_confirmacao, email_confirmado, whatsapp_configurado, data_cadastro) VALUES ('{{ $json.nome }}', '{{ $json.email }}', '{{ $json.token }}', false, false, NOW()) RETURNING id, token_confirmacao;"
+      },
+      "id": "postgres-insert-usuario",
+      "name": "Inserir Usuário Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        980,
+        420
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simulação de envio de e-mail de ativação local (Logs no console do n8n)\nconst user = $input.first().json;\nconst email = $node[\"Validar Novo Usuário e Token\"].json.email;\nconst linkConfirmacao = `http://localhost:5173/?confirmar=${user.token_confirmacao}`;\n\nconsole.log('====================================');\nconsole.log(`ENVIANDO E-MAIL PARA: ${email}`);\nconsole.log(`Link de Confirmação JAB: ${linkConfirmacao}`);\nconsole.log('====================================');\n\nreturn {\n  success: true,\n  message: 'E-mail de confirmação enviado!',\n  link_confirmacao_simulado: linkConfirmacao\n};"
+      },
+      "id": "code-simulate-email",
+      "name": "Simular Envio de E-mail",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: false,\n  message: 'Este endereço de e-mail já está cadastrado para receber alertas!'\n};"
+      },
+      "id": "code-response-user-exists",
+      "name": "Erro Usuário Duplicado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "usuarios/confirmar",
+        "options": {}
+      },
+      "id": "webhook-post-usuarios-confirmar",
+      "name": "POST /usuarios/confirmar",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE usuarios SET email_confirmado = true WHERE token_confirmacao = '{{ $json.body.token }}' RETURNING id, nome, email, whatsapp_configurado, token_confirmacao;"
+      },
+      "id": "postgres-confirm-email",
+      "name": "Confirmar E-mail no Banco",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        680
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.all();\nif (results.length === 0 || !results[0].json.id) {\n  // Se não atualizou nada, pode ser que o token seja inválido ou já tenha sido ativado antes.\n  // Faremos um select de segurança para ver se o usuário já existe e está confirmado\n  return { json: { success: false, fallback: true } };\n}\nreturn { json: { success: true, user: results[0].json } };"
+      },
+      "id": "code-check-confirm-result",
+      "name": "Verificar Resultado Ativação",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "mix"
+          },
+          "conditions": [
+            {
+              "id": "check-success",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-confirm-success",
+      "name": "Ativado com Sucesso?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        760,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $node[\"Confirmar E-mail no Banco\"].json;"
+      },
+      "id": "code-return-user-data",
+      "name": "Retornar Usuário Confirmado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, nome, email, whatsapp_configurado, token_confirmacao FROM usuarios WHERE token_confirmacao = '{{ $node[\"POST /usuarios/confirmar\"].json.body.token }}';"
+      },
+      "id": "postgres-fallback-get-user",
+      "name": "Buscar Usuário Existente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        980,
+        760
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.all();\nif (results.length === 0 || !results[0].json.id) {\n  // Se nem no select achou, o token realmente é inválido\n  throw new Error('Token de ativação inválido.');\n}\nreturn results[0].json;"
+      },
+      "id": "code-validate-fallback",
+      "name": "Validar Usuário Existente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "usuarios/preferencias",
+        "options": {}
+      },
+      "id": "webhook-get-preferencias",
+      "name": "GET /usuarios/preferencias",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT whatsapp, whatsapp_configurado, estado, cidade, categorias_vagas, frequencia_envio FROM usuarios WHERE id = '{{ $json.query.id }}'::uuid;"
+      },
+      "id": "postgres-get-preferencias",
+      "name": "Buscar Preferências Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        920
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "empresas/cadastro",
+        "options": {}
+      },
+      "id": "webhook-post-empresas-cadastro",
+      "name": "POST /empresas/cadastro",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';"
+      },
+      "id": "postgres-check-empresa-exists",
+      "name": "Verificar se Empresa Existe",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        1100
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.all();\nconst body = $node[\"POST /empresas/cadastro\"].json.body;\n\nif (input.length > 0) {\n  return { json: { exists: true } };\n}\n\n// Limpar CNPJ\nconst cnpjLimpo = body.cnpj.replace(/\\D/g, '');\nconst id = 'emp_' + cnpjLimpo;\nconst token = 'tok_comp_' + Math.random().toString(36).substr(2, 9) + Math.random().toString(36).substr(2, 9);\n\nreturn {\n  json: {\n    exists: false,\n    id,\n    cnpj: body.cnpj,\n    nome_fantasia: body.nome_fantasia,\n    email: body.email,\n    telefone: body.telefone,\n    site: body.site || '',\n    token_acesso: token\n  }\n};"
+      },
+      "id": "code-validate-company",
+      "name": "Validar Nova Empresa e Token",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "mix"
+          },
+          "conditions": [
+            {
+              "id": "check-exists",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "isTrue"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-company-exists",
+      "name": "Empresa Já Existe?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        760,
+        1100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO empresas (id, cnpj, nome_fantasia, email, telefone, site, token_acesso) VALUES ('{{ $json.id }}', '{{ $json.cnpj }}', '{{ $json.nome_fantasia }}', '{{ $json.email }}', '{{ $json.telefone }}', '{{ $json.site }}', '{{ $json.token_acesso }}') RETURNING id, cnpj, nome_fantasia, email, telefone, site, token_acesso;"
+      },
+      "id": "postgres-insert-company",
+      "name": "Inserir Empresa Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        980,
+        1060
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: false,\n  message: 'Este CNPJ ou E-mail já está cadastrado como empresa parceira!'\n};"
+      },
+      "id": "code-response-company-exists",
+      "name": "Erro Empresa Duplicada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        1160
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vagas/cadastrar",
+        "options": {}
+      },
+      "id": "webhook-post-vagas-cadastrar",
+      "name": "POST /vagas/cadastrar",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $node[\"POST /vagas/cadastrar\"].json.body;\n\n// Gerar um hash único para a vaga manual\nconst seed = body.url || (body.titulo + body.empresa + Date.now().toString());\nlet hash = 0;\nfor (let i = 0; i < seed.length; i++) {\n  const char = seed.charCodeAt(i);\n  hash = ((hash << 5) - hash) + char;\n  hash = hash & hash;\n}\nconst uniqueId = 'vaga_man_' + Math.abs(hash).toString(36) + Math.random().toString(36).substr(2, 5);\n\nreturn {\n  json: {\n    id: uniqueId,\n    body\n  }\n};"
+      },
+      "id": "code-generate-vaga-id",
+      "name": "Gerar ID Vaga Manual",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, empresa_id) VALUES ('{{ $json.id }}', '{{ $json.body.titulo }}', '{{ $json.body.empresa }}', '{{ $json.body.localidade }}', '{{ $json.body.descricao }}', '{{ $json.body.url }}', 'Parceiro', 'PENDENTE', '{{ $json.body.empresa_id }}') RETURNING id;"
+      },
+      "id": "postgres-insert-vaga-parceiro",
+      "name": "Inserir Vaga Parceiro",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        540,
+        1300
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  message: 'Sua vaga de Jovem Aprendiz foi cadastrada com sucesso! Ela foi enviada para a fila de moderação e será publicada após validação.'\n};"
+      },
+      "id": "code-return-vaga-success",
+      "name": "Retornar Sucesso Vaga",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        1300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "empresas/vagas",
+        "options": {}
+      },
+      "id": "webhook-get-empresas-vagas",
+      "name": "GET /empresas/vagas",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM vagas WHERE empresa_id = '{{ $json.query.empresa_id }}' ORDER BY data_descoberta DESC;"
+      },
+      "id": "postgres-get-company-jobs",
+      "name": "Buscar Vagas da Empresa",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        1460
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "empresas/login",
+        "options": {}
+      },
+      "id": "webhook-post-empresas-login",
+      "name": "POST /empresas/login",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1620
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, cnpj, nome_fantasia, email, telefone, site, token_acesso FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';"
+      },
+      "id": "postgres-login-company",
+      "name": "Buscar Empresa Login",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        1620
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.all();\nif (results.length === 0 || !results[0].json.id) {\n  throw new Error('Empresa parceira não encontrada com esse e-mail ou CNPJ.');\n}\nreturn results[0].json;"
+      },
+      "id": "code-return-company-login",
+      "name": "Retornar Empresa Login",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        1620
+      ]
+    }
+  ],
+  "connections": {
+    "GET /vagas": {
+      "main": [
+        [
+          {
+            "node": "Listar Vagas Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /vagas/moderacao": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status Vaga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Status Vaga": {
+      "main": [
+        [
+          {
+            "node": "Retornar Sucesso Moderação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /usuarios/cadastro": {
+      "main": [
+        [
+          {
+            "node": "Verificar se E-mail Existe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar se E-mail Existe": {
+      "main": [
+        [
+          {
+            "node": "Validar Novo Usuário e Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Novo Usuário e Token": {
+      "main": [
+        [
+          {
+            "node": "Usuário Já Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usuário Já Existe?": {
+      "main": [
+        [
+          {
+            "node": "Inserir Usuário Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Erro Usuário Duplicado",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Inserir Usuário Supabase": {
+      "main": [
+        [
+          {
+            "node": "Simular Envio de E-mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /usuarios/confirmar": {
+      "main": [
+        [
+          {
+            "node": "Confirmar E-mail no Banco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmar E-mail no Banco": {
+      "main": [
+        [
+          {
+            "node": "Verificar Resultado Ativação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Resultado Ativação": {
+      "main": [
+        [
+          {
+            "node": "Ativado com Sucesso?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ativado com Sucesso?": {
+      "main": [
+        [
+          {
+            "node": "Retornar Usuário Confirmado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar Usuário Existente",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Buscar Usuário Existente": {
+      "main": [
+        [
+          {
+            "node": "Validar Usuário Existente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /usuarios/preferencias": {
+      "main": [
+        [
+          {
+            "node": "Buscar Preferências Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /empresas/cadastro": {
+      "main": [
+        [
+          {
+            "node": "Verificar se Empresa Existe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar se Empresa Existe": {
+      "main": [
+        [
+          {
+            "node": "Validar Nova Empresa e Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Nova Empresa e Token": {
+      "main": [
+        [
+          {
+            "node": "Empresa Já Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empresa Já Existe?": {
+      "main": [
+        [
+          {
+            "node": "Inserir Empresa Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Erro Empresa Duplicada",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "POST /vagas/cadastrar": {
+      "main": [
+        [
+          {
+            "node": "Gerar ID Vaga Manual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar ID Vaga Manual": {
+      "main": [
+        [
+          {
+            "node": "Inserir Vaga Parceiro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Vaga Parceiro": {
+      "main": [
+        [
+          {
+            "node": "Retornar Sucesso Vaga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /empresas/vagas": {
+      "main": [
+        [
+          {
+            "node": "Buscar Vagas da Empresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /empresas/login": {
+      "main": [
+        [
+          {
+            "node": "Buscar Empresa Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Empresa Login": {
+      "main": [
+        [
+          {
+            "node": "Retornar Empresa Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": true,
+  "id": "101"
+}

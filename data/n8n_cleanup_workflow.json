@@ -1,0 +1,61 @@
+{
+  "name": "JAB - Limpeza Automática de Vagas Antigas",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+      "name": "Schedule Trigger Diário",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM vagas WHERE data_descoberta < NOW() - INTERVAL '90 DAYS';"
+      },
+      "id": "postgres-delete-expiradas",
+      "name": "Deletar Vagas Expiradas (> 90 dias)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        500,
+        300
+      ],
+      "credentials": {
+        "database": {
+          "id": "supabase-postgres-credentials"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger Diário": {
+      "main": [
+        [
+          {
+            "node": "Deletar Vagas Expiradas (> 90 dias)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "103"
+}

@@ -5,7 +5,9 @@
       "parameters": {
         "httpMethod": "GET",
         "path": "vagas",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-get-vagas",
       "name": "GET /vagas",
@@ -14,7 +16,8 @@
       "position": [
         100,
         100
-      ]
+      ],
+      "webhookId": "9f529d05-5fb5-4e38-9eae-6fd790553f25"
     },
     {
       "parameters": {
@@ -39,7 +42,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "vagas/moderacao",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-moderacao",
       "name": "POST /vagas/moderacao",
@@ -48,7 +53,8 @@
       "position": [
         100,
         260
-      ]
+      ],
+      "webhookId": "738d2521-b22b-428e-a61b-08ff5361a870"
     },
     {
       "parameters": {
@@ -86,7 +92,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "usuarios/cadastro",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-usuarios-cadastro",
       "name": "POST /usuarios/cadastro",
@@ -95,7 +103,8 @@
       "position": [
         100,
         440
-      ]
+      ],
+      "webhookId": "331ac7dc-5634-4aa9-b825-bd2a50064873"
     },
     {
       "parameters": {
@@ -210,7 +219,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "usuarios/confirmar",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-usuarios-confirmar",
       "name": "POST /usuarios/confirmar",
@@ -219,7 +230,8 @@
       "position": [
         100,
         680
-      ]
+      ],
+      "webhookId": "3559b53f-bb37-4270-8bae-624f827e688b"
     },
     {
       "parameters": {
@@ -334,7 +346,9 @@
       "parameters": {
         "httpMethod": "GET",
         "path": "usuarios/preferencias",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-get-preferencias",
       "name": "GET /usuarios/preferencias",
@@ -343,7 +357,8 @@
       "position": [
         100,
         920
-      ]
+      ],
+      "webhookId": "3a2bf24c-4a9c-4045-a127-98445cbc67a8"
     },
     {
       "parameters": {
@@ -368,7 +383,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "empresas/cadastro",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-empresas-cadastro",
       "name": "POST /empresas/cadastro",
@@ -377,7 +394,8 @@
       "position": [
         100,
         1100
-      ]
+      ],
+      "webhookId": "07c7a182-06be-410d-a9d4-e4165b33a91b"
     },
     {
       "parameters": {
@@ -479,7 +497,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "vagas/cadastrar",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-vagas-cadastrar",
       "name": "POST /vagas/cadastrar",
@@ -488,7 +508,8 @@
       "position": [
         100,
         1300
-      ]
+      ],
+      "webhookId": "26041dbc-adc7-41ce-8f48-b457098c2223"
     },
     {
       "parameters": {
@@ -539,7 +560,9 @@
       "parameters": {
         "httpMethod": "GET",
         "path": "empresas/vagas",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-get-empresas-vagas",
       "name": "GET /empresas/vagas",
@@ -548,7 +571,8 @@
       "position": [
         100,
         1460
-      ]
+      ],
+      "webhookId": "a05c4bd4-5e13-45cc-b0d7-dd67048aca0d"
     },
     {
       "parameters": {
@@ -573,7 +597,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "empresas/login",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-empresas-login",
       "name": "POST /empresas/login",
@@ -582,7 +608,8 @@
       "position": [
         100,
         1620
-      ]
+      ],
+      "webhookId": "ddb46c5f-fa3a-4a4a-8981-d6daa15044b5"
     },
     {
       "parameters": {
@@ -620,7 +647,9 @@
       "parameters": {
         "httpMethod": "GET",
         "path": "fontes",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-get-fontes",
       "name": "GET /fontes",
@@ -629,7 +658,8 @@
       "position": [
         100,
         1780
-      ]
+      ],
+      "webhookId": "22437d39-edfe-4c0e-b31d-57d43b1bd03e"
     },
     {
       "parameters": {
@@ -654,7 +684,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "fontes/cadastrar",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-fontes-cadastrar",
       "name": "POST /fontes/cadastrar",
@@ -663,7 +695,8 @@
       "position": [
         100,
         1940
-      ]
+      ],
+      "webhookId": "4bd694ab-d039-4b30-a690-a4783aea9217"
     },
     {
       "parameters": {
@@ -688,7 +721,9 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "fontes/deletar",
-        "options": {}
+        "options": {},
+        "responseMode": "lastNode",
+        "responseData": "allEntries"
       },
       "id": "webhook-post-fontes-deletar",
       "name": "POST /fontes/deletar",
@@ -697,7 +732,8 @@
       "position": [
         100,
         2100
-      ]
+      ],
+      "webhookId": "2d9e054d-ebaa-43e2-a61a-bfd7f3132dae"
     },
     {
       "parameters": {

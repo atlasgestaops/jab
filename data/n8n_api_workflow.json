@@ -3,7 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "httpMethod": "GET",
         "path": "vagas",
         "options": {},
         "responseMode": "lastNode",
@@ -14,27 +13,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        100
+        -256,
+        -432
       ],
       "webhookId": "9f529d05-5fb5-4e38-9eae-6fd790553f25"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM vagas WHERE status != 'REJEITADO' ORDER BY data_descoberta DESC;"
+        "query": "SELECT * FROM vagas WHERE status != 'REJEITADO' ORDER BY data_descoberta DESC;",
+        "options": {}
       },
       "id": "postgres-get-vagas",
       "name": "Listar Vagas Supabase",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        100
+        -48,
+        -432
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -51,27 +52,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        260
+        2672,
+        -256
       ],
       "webhookId": "738d2521-b22b-428e-a61b-08ff5361a870"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE vagas SET status = '{{ $json.body.status }}', data_validacao = NOW() WHERE id = '{{ $json.body.id }}';"
+        "query": "UPDATE vagas SET status = '{{ $json.body.status }}', data_validacao = NOW() WHERE id = '{{ $json.body.id }}';",
+        "options": {}
       },
       "id": "postgres-update-vaga",
       "name": "Atualizar Status Vaga",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        260
+        2880,
+        -256
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -84,8 +87,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
-        260
+        3104,
+        -256
       ]
     },
     {
@@ -101,27 +104,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        440
+        -256,
+        -160
       ],
       "webhookId": "331ac7dc-5634-4aa9-b825-bd2a50064873"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id FROM usuarios WHERE email = '{{ $json.body.email }}';"
+        "query": "SELECT id FROM usuarios WHERE email = '{{ $json.body.email }}';",
+        "options": {}
       },
       "id": "postgres-check-user-exists",
       "name": "Verificar se E-mail Existe",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        440
+        -48,
+        -160
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -134,8 +139,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
-        440
+        176,
+        -160
       ]
     },
     {
@@ -166,26 +171,28 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2,
       "position": [
-        760,
-        440
+        400,
+        -160
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO usuarios (nome, email, token_confirmacao, email_confirmado, whatsapp_configurado, data_cadastro) VALUES ('{{ $json.nome }}', '{{ $json.email }}', '{{ $json.token }}', false, false, NOW()) RETURNING id, token_confirmacao;"
+        "query": "INSERT INTO usuarios (nome, email, token_confirmacao, email_confirmado, whatsapp_configurado, data_cadastro) VALUES ('{{ $json.nome }}', '{{ $json.email }}', '{{ $json.token }}', false, false, NOW()) RETURNING id, token_confirmacao;",
+        "options": {}
       },
       "id": "postgres-insert-usuario",
       "name": "Inserir Usuário Supabase",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        980,
-        420
+        640,
+        -160
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -198,8 +205,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1200,
-        420
+        848,
+        -160
       ]
     },
     {
@@ -211,8 +218,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        980,
-        520
+        400,
+        32
       ]
     },
     {
@@ -228,27 +235,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        680
+        -256,
+        288
       ],
       "webhookId": "3559b53f-bb37-4270-8bae-624f827e688b"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE usuarios SET email_confirmado = true WHERE token_confirmacao = '{{ $json.body.token }}' RETURNING id, nome, email, whatsapp_configurado, token_confirmacao;"
+        "query": "UPDATE usuarios SET email_confirmado = true WHERE token_confirmacao = '{{ $json.body.token }}' RETURNING id, nome, email, whatsapp_configurado, token_confirmacao;",
+        "options": {}
       },
       "id": "postgres-confirm-email",
       "name": "Confirmar E-mail no Banco",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        680
+        -48,
+        288
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -261,8 +270,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
-        680
+        176,
+        288
       ]
     },
     {
@@ -293,8 +302,8 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2,
       "position": [
-        760,
-        680
+        400,
+        288
       ]
     },
     {
@@ -306,26 +315,28 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        980,
-        640
+        656,
+        288
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id, nome, email, whatsapp_configurado, token_confirmacao FROM usuarios WHERE token_confirmacao = '{{ $node[\"POST /usuarios/confirmar\"].json.body.token }}';"
+        "query": "SELECT id, nome, email, whatsapp_configurado, token_confirmacao FROM usuarios WHERE token_confirmacao = '{{ $node[\"POST /usuarios/confirmar\"].json.body.token }}';",
+        "options": {}
       },
       "id": "postgres-fallback-get-user",
       "name": "Buscar Usuário Existente",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        980,
-        760
+        400,
+        464
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -338,13 +349,12 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1200,
-        760
+        656,
+        464
       ]
     },
     {
       "parameters": {
-        "httpMethod": "GET",
         "path": "usuarios/preferencias",
         "options": {},
         "responseMode": "lastNode",
@@ -355,27 +365,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        920
+        -192,
+        816
       ],
       "webhookId": "3a2bf24c-4a9c-4045-a127-98445cbc67a8"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT whatsapp, whatsapp_configurado, estado, cidade, categorias_vagas, frequencia_envio FROM usuarios WHERE id = '{{ $json.query.id }}'::uuid;"
+        "query": "SELECT whatsapp, whatsapp_configurado, estado, cidade, categorias_vagas, frequencia_envio FROM usuarios WHERE id = '{{ $json.query.id }}'::uuid;",
+        "options": {}
       },
       "id": "postgres-get-preferencias",
       "name": "Buscar Preferências Supabase",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        920
+        16,
+        816
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -392,27 +404,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        1100
+        1296,
+        -384
       ],
       "webhookId": "07c7a182-06be-410d-a9d4-e4165b33a91b"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';"
+        "query": "SELECT id FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';",
+        "options": {}
       },
       "id": "postgres-check-empresa-exists",
       "name": "Verificar se Empresa Existe",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        1100
+        1504,
+        -384
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -425,8 +439,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
-        1100
+        1728,
+        -384
       ]
     },
     {
@@ -457,26 +471,28 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2,
       "position": [
-        760,
-        1100
+        1952,
+        -384
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO empresas (id, cnpj, nome_fantasia, email, telefone, site, token_acesso) VALUES ('{{ $json.id }}', '{{ $json.cnpj }}', '{{ $json.nome_fantasia }}', '{{ $json.email }}', '{{ $json.telefone }}', '{{ $json.site }}', '{{ $json.token_acesso }}') RETURNING id, cnpj, nome_fantasia, email, telefone, site, token_acesso;"
+        "query": "INSERT INTO empresas (id, cnpj, nome_fantasia, email, telefone, site, token_acesso) VALUES ('{{ $json.id }}', '{{ $json.cnpj }}', '{{ $json.nome_fantasia }}', '{{ $json.email }}', '{{ $json.telefone }}', '{{ $json.site }}', '{{ $json.token_acesso }}') RETURNING id, cnpj, nome_fantasia, email, telefone, site, token_acesso;",
+        "options": {}
       },
       "id": "postgres-insert-company",
       "name": "Inserir Empresa Supabase",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        980,
-        1060
+        2208,
+        -384
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -489,8 +505,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        980,
-        1160
+        1952,
+        -208
       ]
     },
     {
@@ -506,8 +522,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        1300
+        1344,
+        432
       ],
       "webhookId": "26041dbc-adc7-41ce-8f48-b457098c2223"
     },
@@ -520,26 +536,28 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        320,
-        1300
+        1552,
+        432
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, empresa_id) VALUES ('{{ $json.id }}', '{{ $json.body.titulo }}', '{{ $json.body.empresa }}', '{{ $json.body.localidade }}', '{{ $json.body.descricao }}', '{{ $json.body.url }}', 'Parceiro', 'PENDENTE', '{{ $json.body.empresa_id }}') RETURNING id;"
+        "query": "INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, empresa_id) VALUES ('{{ $json.id }}', '{{ $json.body.titulo }}', '{{ $json.body.empresa }}', '{{ $json.body.localidade }}', '{{ $json.body.descricao }}', '{{ $json.body.url }}', 'Parceiro', 'PENDENTE', '{{ $json.body.empresa_id }}') RETURNING id;",
+        "options": {}
       },
       "id": "postgres-insert-vaga-parceiro",
       "name": "Inserir Vaga Parceiro",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        540,
-        1300
+        1776,
+        432
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -552,13 +570,12 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        760,
-        1300
+        2000,
+        432
       ]
     },
     {
       "parameters": {
-        "httpMethod": "GET",
         "path": "empresas/vagas",
         "options": {},
         "responseMode": "lastNode",
@@ -569,27 +586,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        1460
+        1312,
+        752
       ],
       "webhookId": "a05c4bd4-5e13-45cc-b0d7-dd67048aca0d"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM vagas WHERE empresa_id = '{{ $json.query.empresa_id }}' ORDER BY data_descoberta DESC;"
+        "query": "SELECT * FROM vagas WHERE empresa_id = '{{ $json.query.empresa_id }}' ORDER BY data_descoberta DESC;",
+        "options": {}
       },
       "id": "postgres-get-company-jobs",
       "name": "Buscar Vagas da Empresa",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        1460
+        1520,
+        752
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -606,27 +625,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        1620
+        1344,
+        96
       ],
       "webhookId": "ddb46c5f-fa3a-4a4a-8981-d6daa15044b5"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id, cnpj, nome_fantasia, email, telefone, site, token_acesso FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';"
+        "query": "SELECT id, cnpj, nome_fantasia, email, telefone, site, token_acesso FROM empresas WHERE email = '{{ $json.body.email }}' OR cnpj = '{{ $json.body.cnpj }}';",
+        "options": {}
       },
       "id": "postgres-login-company",
       "name": "Buscar Empresa Login",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        1620
+        1552,
+        96
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -639,13 +660,12 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
-        1620
+        1776,
+        96
       ]
     },
     {
       "parameters": {
-        "httpMethod": "GET",
         "path": "fontes",
         "options": {},
         "responseMode": "lastNode",
@@ -656,27 +676,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        1780
+        2704,
+        384
       ],
       "webhookId": "22437d39-edfe-4c0e-b31d-57d43b1bd03e"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM fontes_busca ORDER BY nome_fonte ASC;"
+        "query": "SELECT * FROM fontes_busca ORDER BY nome_fonte ASC;",
+        "options": {}
       },
       "id": "postgres-get-fontes-list",
       "name": "Buscar Fontes Supabase",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        1780
+        2912,
+        384
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -693,27 +715,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        1940
+        2688,
+        48
       ],
       "webhookId": "4bd694ab-d039-4b30-a690-a4783aea9217"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO fontes_busca (nome_fonte, url, ativa) VALUES ('{{ $json.body.nome_fonte }}', '{{ $json.body.url }}', true) RETURNING *;"
+        "query": "INSERT INTO fontes_busca (nome_fonte, url, ativa) VALUES ('{{ $json.body.nome_fonte }}', '{{ $json.body.url }}', true) RETURNING *;",
+        "options": {}
       },
       "id": "postgres-insert-fonte-entry",
       "name": "Inserir Fonte Supabase",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        1940
+        2896,
+        48
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -730,27 +754,29 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        100,
-        2100
+        2704,
+        704
       ],
       "webhookId": "2d9e054d-ebaa-43e2-a61a-bfd7f3132dae"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "DELETE FROM fontes_busca WHERE id = {{ $json.body.id }};"
+        "query": "DELETE FROM fontes_busca WHERE id = {{ $json.body.id }};",
+        "options": {}
       },
       "id": "postgres-delete-fonte-entry",
       "name": "Deletar Fonte Supabase",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        320,
-        2100
+        2912,
+        704
       ],
       "credentials": {
         "postgres": {
-          "id": "iAAWD2FoMGyNTpQE"
+          "id": "iAAWD2FoMGyNTpQE",
+          "name": "Postgres account"
         }
       }
     },
@@ -763,9 +789,197 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
-        2100
+        3136,
+        704
       ]
+    },
+    {
+      "parameters": {
+        "content": "**LISTAR VAGAS PUBLICAS**\n",
+        "height": 208,
+        "width": 1408
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        -480
+      ],
+      "typeVersion": 1,
+      "id": "373b9872-d8e8-4b32-b2cd-6a0d0daa1aba",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "**CADASTRO DE ALERTAS**\n",
+        "height": 400,
+        "width": 1408
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "5f4c7a9a-5413-4a2f-8e0d-aab78c250a07",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "**CONFIRMAR EMAIL**",
+        "height": 400,
+        "width": 1408
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "0cda3c8e-20c6-4434-8157-3961d3d5a11f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "**Cadastro de Recrutador**\n",
+        "height": 400,
+        "width": 1200,
+        "color": "#188DFB"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1232,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "56422bf9-5073-494c-894c-0d101aabe571",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "**Preferências de Alertas**\n",
+        "height": 400,
+        "width": 1408
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        688
+      ],
+      "typeVersion": 1,
+      "id": "b997ec74-a1e5-42a5-8aa6-47eca6967853",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "**Login de Empresa**",
+        "height": 272,
+        "width": 1200,
+        "color": "#188DFB"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1232,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "f54b1f35-b7a5-486e-941f-29d72699efff",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "**Cadastrar Vaga Manual**",
+        "height": 288,
+        "width": 1200,
+        "color": "#188DFB"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1232,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "d2c1cde2-3ee2-4780-9289-8f2d868b3a92",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "**Vagas do Recrutador**",
+        "height": 288,
+        "width": 1200,
+        "color": "#188DFB"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1232,
+        672
+      ],
+      "typeVersion": 1,
+      "id": "c73bf6d3-af25-4598-a553-812332e00ecf",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "**Moderação de Vaga**",
+        "height": 288,
+        "width": 1408,
+        "color": "#009E0B"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2576,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "b88d7b27-0e92-4910-9352-466e20ad50e0",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "**Listar Fontes de Busca**\n",
+        "height": 288,
+        "width": 1408,
+        "color": "#009E0B"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2576,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "c073269a-3b5e-4e31-b24f-5091d2c4b58f",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "**Adicionar Fonte de Busca**",
+        "height": 288,
+        "width": 1408,
+        "color": "#009E0B"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2576,
+        288
+      ],
+      "typeVersion": 1,
+      "id": "040ff4bf-bb7a-482a-92a2-44f64842ad04",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "**Deletar Fonte de Busca**\n",
+        "height": 288,
+        "width": 1408,
+        "color": "#009E0B"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2576,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "00f6ceaf-ed4e-4454-af75-50bdcd629a75",
+      "name": "Sticky Note11"
     }
   ],
   "connections": {
@@ -1099,7 +1313,5 @@
       ]
     }
   },
-  "settings": {},
-  "active": true,
-  "id": "101"
+  "settings": {}
 }

@@ -74,6 +74,13 @@ function App() {
   const [submittingComp, setSubmittingComp] = useState(false);
   const [companyLoginInput, setCompanyLoginInput] = useState('');
 
+  // Estados para Gerenciamento de Fontes de Busca (Admin)
+  const [adminTab, setAdminTab] = useState<'triagem' | 'fontes'>('triagem');
+  const [sources, setSources] = useState<{ id: number; nome_fonte: string; url: string; ativa: boolean }[]>([]);
+  const [newSourceName, setNewSourceName] = useState('');
+  const [newSourceUrl, setNewSourceUrl] = useState('');
+  const [submittingSource, setSubmittingSource] = useState(false);
+
   // Notificações temporárias (Toast)
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -168,6 +175,75 @@ function App() {
       confirmEmail(token);
     }
   }, []);
+
+  // Carregar fontes de busca para o administrador
+  useEffect(() => {
+    if (currentRoute === 'admin') {
+      loadSources();
+    }
+  }, [currentRoute]);
+
+  const loadSources = async () => {
+    try {
+      const res = await fetch(`${API_URL}/fontes`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setSources(data);
+        }
+      }
+    } catch (e) {
+      console.error("Erro ao carregar fontes de busca", e);
+    }
+  };
+
+  const handleAddSource = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSourceName || !newSourceUrl) return;
+
+    setSubmittingSource(true);
+    try {
+      const res = await fetch(`${API_URL}/fontes/cadastrar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome_fonte: newSourceName, url: newSourceUrl })
+      });
+      if (res.ok) {
+        showToast("Fonte de busca cadastrada com sucesso! 🎉");
+        setNewSourceName('');
+        setNewSourceUrl('');
+        loadSources();
+      } else {
+        showToast("Erro ao cadastrar fonte de busca.");
+      }
+    } catch (e) {
+      console.error("Erro ao cadastrar fonte de busca", e);
+      showToast("Erro ao conectar com a API (n8n offline).");
+    } finally {
+      setSubmittingSource(false);
+    }
+  };
+
+  const handleDeleteSource = async (id: number) => {
+    if (!window.confirm("Deseja realmente remover esta fonte de busca? O robô não varrerá mais esta empresa.")) return;
+
+    try {
+      const res = await fetch(`${API_URL}/fontes/deletar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) {
+        showToast("Fonte de busca removida com sucesso.");
+        loadSources();
+      } else {
+        showToast("Erro ao remover fonte de busca.");
+      }
+    } catch (e) {
+      console.error("Erro ao remover fonte de busca", e);
+      showToast("Erro ao conectar com a API.");
+    }
+  };
 
   // Lógica de aprovação/validação
   const handleApprove = async (id: string) => {
@@ -666,42 +742,144 @@ function App() {
               <p style={styles.adminSubtitle}>
                 Abaixo estão listadas as vagas recentemente capturadas pelo n8n. Clique em "Abrir Link da Vaga" para verificar os detalhes manualmente, e decida se aprova ou rejeita a publicação.
               </p>
+              
+              {/* Navegação por Abas no Admin */}
+              <div style={styles.adminNav}>
+                <button 
+                  style={adminTab === 'triagem' ? styles.adminNavBtnActive : styles.adminNavBtn}
+                  onClick={() => setAdminTab('triagem')}
+                >
+                  Triagem de Vagas ({pendingJobs.length})
+                </button>
+                <button 
+                  style={adminTab === 'fontes' ? styles.adminNavBtnActive : styles.adminNavBtn}
+                  onClick={() => setAdminTab('fontes')}
+                >
+                  Gerenciar Fontes de Busca ({sources.length})
+                </button>
+              </div>
             </div>
           </section>
 
           <section className="container" style={styles.adminContent}>
-            <div style={styles.adminSectionHeader}>
-              <h2 style={styles.sectionTitle}>
-                Fila de Vagas Pendentes
-                <span style={styles.pendingCountBadge}>{pendingJobs.length}</span>
-              </h2>
-              <div style={styles.adminTip}>
-                💡 <em>Dica: Vagas validadas aparecem instantaneamente no portal público.</em>
-              </div>
-            </div>
+            {adminTab === 'triagem' && (
+              <>
+                <div style={styles.adminSectionHeader}>
+                  <h2 style={styles.sectionTitle}>
+                    Fila de Vagas Pendentes
+                    <span style={styles.pendingCountBadge}>{pendingJobs.length}</span>
+                  </h2>
+                  <div style={styles.adminTip}>
+                    💡 <em>Dica: Vagas validadas aparecem instantaneamente no portal público.</em>
+                  </div>
+                </div>
 
-            {pendingJobs.length === 0 ? (
-              <div style={styles.emptyAdminState}>
-                <span style={styles.emptyAdminIcon}>🎉</span>
-                <h3>Fila de triagem vazia!</h3>
-                <p>Nenhuma nova vaga pendente de moderação no momento. Todos os dados foram analisados.</p>
-                <button 
-                  style={styles.backToPortalButton} 
-                  onClick={() => setCurrentRoute('portal')}
-                >
-                  Voltar ao Portal de Vagas
-                </button>
-              </div>
-            ) : (
-              <div style={styles.adminGrid}>
-                {pendingJobs.map(job => (
-                  <AdminJobCard 
-                    key={job.id} 
-                    job={job}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
-                  />
-                ))}
+                {pendingJobs.length === 0 ? (
+                  <div style={styles.emptyAdminState}>
+                    <span style={styles.emptyAdminIcon}>🎉</span>
+                    <h3>Fila de triagem vazia!</h3>
+                    <p>Nenhuma nova vaga pendente de moderação no momento. Todos os dados foram analisados.</p>
+                    <button 
+                      style={styles.backToPortalButton} 
+                      onClick={() => setCurrentRoute('portal')}
+                    >
+                      Voltar ao Portal de Vagas
+                    </button>
+                  </div>
+                ) : (
+                  <div style={styles.adminGrid}>
+                    {pendingJobs.map(job => (
+                      <AdminJobCard 
+                        key={job.id} 
+                        job={job}
+                        onApprove={handleApprove}
+                        onReject={handleReject}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {adminTab === 'fontes' && (
+              <div style={styles.sourcesContainer}>
+                {/* Form de Cadastro */}
+                <div style={styles.sourcesFormCard}>
+                  <h3 style={styles.formTitle}>Cadastrar Nova Fonte</h3>
+                  <p style={styles.formSubtitle}>Insira uma empresa parceira ou seu respectivo portal de vagas Gupy para incluir no mapeamento diário.</p>
+                  <form onSubmit={handleAddSource} style={styles.sourcesForm}>
+                    <div style={styles.formGroup}>
+                      <label style={styles.formLabel}>Nome da Empresa</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ex: Assaí Atacadista"
+                        value={newSourceName}
+                        onChange={(e) => setNewSourceName(e.target.value)}
+                        required
+                        style={styles.formInput}
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.formLabel}>URL do Portal Gupy</label>
+                      <input 
+                        type="url" 
+                        placeholder="Ex: https://assai.gupy.io/"
+                        value={newSourceUrl}
+                        onChange={(e) => setNewSourceUrl(e.target.value)}
+                        required
+                        style={styles.formInput}
+                      />
+                    </div>
+                    <button type="submit" disabled={submittingSource} style={styles.formSubmitBtn}>
+                      {submittingSource ? 'Salvando...' : 'Adicionar Fonte'}
+                    </button>
+                  </form>
+                </div>
+
+                {/* Listagem */}
+                <div style={styles.sourcesListCard}>
+                  <h3 style={styles.sectionSubtitle}>Fontes de Busca Ativas ({sources.length})</h3>
+                  {sources.length === 0 ? (
+                    <p style={styles.noSources}>Nenhuma fonte de busca cadastrada no momento. Adicione uma no formulário ao lado.</p>
+                  ) : (
+                    <div style={styles.tableWrapper}>
+                      <table style={styles.table}>
+                        <thead>
+                          <tr>
+                            <th style={styles.th}>Empresa</th>
+                            <th style={styles.th}>URL do Portal</th>
+                            <th style={styles.th}>Status</th>
+                            <th style={styles.thAction}>Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sources.map(source => (
+                            <tr key={source.id} style={styles.tr}>
+                              <td style={styles.td}><strong>{source.nome_fonte}</strong></td>
+                              <td style={styles.td}>
+                                <a href={source.url} target="_blank" rel="noopener noreferrer" style={styles.sourceLink}>
+                                  {source.url} 🔗
+                                </a>
+                              </td>
+                              <td style={source.ativa ? styles.statusBadgeActive : styles.statusBadgeInactive}>
+                                {source.ativa ? 'Ativa' : 'Inativa'}
+                              </td>
+                              <td style={styles.tdAction}>
+                                <button 
+                                  onClick={() => handleDeleteSource(source.id)} 
+                                  style={styles.deleteBtn}
+                                  title="Excluir Fonte"
+                                >
+                                  🗑️ Excluir
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </section>
@@ -1105,6 +1283,187 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: 'var(--text-xs)',
     fontWeight: 700,
     borderLeft: '4px solid var(--color-primary)',
+  },
+  adminNav: {
+    display: 'flex',
+    gap: '1rem',
+    marginTop: '1.5rem',
+  },
+  adminNavBtn: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    color: '#ffffff90',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    fontWeight: 600,
+    transition: 'all 0.2s ease-in-out',
+  },
+  adminNavBtnActive: {
+    backgroundColor: 'var(--color-primary)',
+    color: 'var(--color-dark)',
+    border: '1px solid var(--color-primary)',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    fontWeight: 700,
+    boxShadow: '0 4px 12px rgba(115, 222, 126, 0.2)',
+  },
+  sourcesContainer: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 2fr',
+    gap: '2rem',
+    alignItems: 'start',
+  },
+  sourcesFormCard: {
+    backgroundColor: 'var(--color-white)',
+    border: '1px solid var(--color-gray-light)',
+    borderRadius: '12px',
+    padding: '1.5rem',
+    boxShadow: 'var(--shadow-sm)',
+  },
+  sourcesListCard: {
+    backgroundColor: 'var(--color-white)',
+    border: '1px solid var(--color-gray-light)',
+    borderRadius: '12px',
+    padding: '1.5rem',
+    boxShadow: 'var(--shadow-sm)',
+    overflow: 'hidden',
+  },
+  formTitle: {
+    fontSize: '1.2rem',
+    color: 'var(--color-dark)',
+    marginBottom: '0.5rem',
+    fontWeight: 700,
+    textAlign: 'left',
+  },
+  formSubtitle: {
+    fontSize: '0.8rem',
+    color: 'var(--color-gray-text)',
+    marginBottom: '1.5rem',
+    lineHeight: 1.4,
+    textAlign: 'left',
+  },
+  sourcesForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    textAlign: 'left',
+  },
+  formLabel: {
+    fontSize: '0.8rem',
+    fontWeight: 600,
+    color: 'var(--color-dark)',
+  },
+  formInput: {
+    padding: '10px 12px',
+    border: '1px solid var(--color-gray-light)',
+    borderRadius: '6px',
+    fontSize: '0.85rem',
+    outline: 'none',
+    transition: 'border-color 0.2s',
+  },
+  formSubmitBtn: {
+    backgroundColor: 'var(--color-accent)',
+    color: 'var(--color-white)',
+    padding: '12px',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '0.9rem',
+    fontWeight: 700,
+    cursor: 'pointer',
+    marginTop: '0.5rem',
+    transition: 'all 0.2s',
+  },
+  sectionSubtitle: {
+    fontSize: '1.1rem',
+    color: 'var(--color-dark)',
+    marginBottom: '1rem',
+    fontWeight: 600,
+    textAlign: 'left',
+  },
+  noSources: {
+    fontSize: '0.9rem',
+    color: 'var(--color-gray-text)',
+    padding: '2rem 0',
+    textAlign: 'center',
+  },
+  tableWrapper: {
+    overflowX: 'auto',
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    textAlign: 'left',
+  },
+  th: {
+    padding: '12px',
+    borderBottom: '2px solid var(--color-gray-light)',
+    fontSize: '0.85rem',
+    fontWeight: 700,
+    color: 'var(--color-dark)',
+  },
+  thAction: {
+    padding: '12px',
+    borderBottom: '2px solid var(--color-gray-light)',
+    fontSize: '0.85rem',
+    fontWeight: 700,
+    color: 'var(--color-dark)',
+    textAlign: 'right',
+  },
+  tr: {
+    borderBottom: '1px solid var(--color-gray-light)',
+  },
+  td: {
+    padding: '12px',
+    fontSize: '0.85rem',
+    color: 'var(--color-dark)',
+    verticalAlign: 'middle',
+  },
+  tdAction: {
+    padding: '12px',
+    fontSize: '0.85rem',
+    textAlign: 'right',
+    verticalAlign: 'middle',
+  },
+  sourceLink: {
+    color: 'var(--color-accent)',
+    textDecoration: 'none',
+    fontWeight: 500,
+  },
+  statusBadgeActive: {
+    backgroundColor: 'var(--color-primary-ice)',
+    color: 'var(--color-primary-dark)',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+  },
+  statusBadgeInactive: {
+    backgroundColor: '#f3f4f6',
+    color: '#6b7280',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    fontSize: '0.75rem',
+    fontWeight: 700,
+  },
+  deleteBtn: {
+    backgroundColor: '#fee2e2',
+    color: '#dc2626',
+    border: 'none',
+    padding: '6px 12px',
+    borderRadius: '6px',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
   }
 };
 

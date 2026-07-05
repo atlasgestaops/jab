@@ -30,8 +30,8 @@
         100
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -64,8 +64,8 @@
         260
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -111,8 +111,8 @@
         440
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -175,8 +175,8 @@
         420
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -235,8 +235,8 @@
         680
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -312,8 +312,8 @@
         760
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -359,8 +359,8 @@
         920
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -393,8 +393,8 @@
         1100
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -457,8 +457,8 @@
         1060
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -517,8 +517,8 @@
         1300
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -564,8 +564,8 @@
         1460
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -598,8 +598,8 @@
         1620
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -614,6 +614,121 @@
       "position": [
         540,
         1620
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "fontes",
+        "options": {}
+      },
+      "id": "webhook-get-fontes",
+      "name": "GET /fontes",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1780
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM fontes_busca ORDER BY nome_fonte ASC;"
+      },
+      "id": "postgres-get-fontes-list",
+      "name": "Buscar Fontes Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        1780
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fontes/cadastrar",
+        "options": {}
+      },
+      "id": "webhook-post-fontes-cadastrar",
+      "name": "POST /fontes/cadastrar",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1940
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO fontes_busca (nome_fonte, url, ativa) VALUES ('{{ $json.body.nome_fonte }}', '{{ $json.body.url }}', true) RETURNING *;"
+      },
+      "id": "postgres-insert-fonte-entry",
+      "name": "Inserir Fonte Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        1940
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fontes/deletar",
+        "options": {}
+      },
+      "id": "webhook-post-fontes-deletar",
+      "name": "POST /fontes/deletar",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        2100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM fontes_busca WHERE id = {{ $json.body.id }};"
+      },
+      "id": "postgres-delete-fonte-entry",
+      "name": "Deletar Fonte Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        2100
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  message: 'Fonte deletada com sucesso!'\n};"
+      },
+      "id": "code-response-delete-fonte",
+      "name": "Retornar Sucesso Deletar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        540,
+        2100
       ]
     }
   ],
@@ -897,6 +1012,50 @@
         [
           {
             "node": "Retornar Empresa Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /fontes": {
+      "main": [
+        [
+          {
+            "node": "Buscar Fontes Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /fontes/cadastrar": {
+      "main": [
+        [
+          {
+            "node": "Inserir Fonte Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /fontes/deletar": {
+      "main": [
+        [
+          {
+            "node": "Deletar Fonte Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deletar Fonte Supabase": {
+      "main": [
+        [
+          {
+            "node": "Retornar Sucesso Deletar",
             "type": "main",
             "index": 0
           }

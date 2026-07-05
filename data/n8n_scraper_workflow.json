@@ -88,30 +88,11 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "type": "mix"
-          },
-          "conditions": [
-            {
-              "id": "check-empty",
-              "leftValue": "={{ $json.vaga_existe }}",
-              "rightValue": "false",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
+        "jsCode": "const items = $input.all();\nconst result = [];\nfor (const item of items) {\n  if (item.json.vaga_existe === false || item.json.vaga_existe === 'false') {\n    const parserData = $node['Parser_de_Vagas'].json;\n    result.push({ json: { ...parserData, vaga_nova: true } });\n  }\n}\nreturn result;"
       },
       "id": "c165aa21-0a6e-4775-9de8-16cb60fa236d",
       "name": "Vaga_E_Nova",
-      "type": "n8n-nodes-base.filter",
+      "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         1250,
@@ -121,7 +102,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "=INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, data_publicacao, data_descoberta) VALUES ('{{ $node[\"Parser_de_Vagas\"].json.id }}', '{{ $node[\"Parser_de_Vagas\"].json.titulo }}', '{{ $node[\"Parser_de_Vagas\"].json.empresa }}', '{{ $node[\"Parser_de_Vagas\"].json.localidade }}', '{{ $node[\"Parser_de_Vagas\"].json.descricao }}', '{{ $node[\"Parser_de_Vagas\"].json.url }}', '{{ $node[\"Parser_de_Vagas\"].json.origem }}', 'PENDENTE', '{{ $node[\"Parser_de_Vagas\"].json.data_publicacao }}', NOW());"
+        "query": "=INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, data_publicacao, data_descoberta) VALUES ('{{ $json.id }}', '{{ $json.titulo }}', '{{ $json.empresa }}', '{{ $json.localidade }}', '{{ $json.descricao }}', '{{ $json.url }}', '{{ $json.origem }}', 'PENDENTE', '{{ $json.data_publicacao }}', NOW());"
       },
       "id": "postgres-insert-vaga",
       "name": "Inserir_Vaga_Pendente",
@@ -202,8 +183,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
       ]
     }
   },

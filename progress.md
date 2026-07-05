@@ -3,21 +3,22 @@
 ## 📅 Sprint Atual: Sprint 2 (Migração de Produção e Homologação)
 
 ### O que foi feito:
-- [x] Criação e validação do banco de dados relacional no Supabase (`vventtlewnzahkypecdp`) contendo as 5 tabelas do sistema.
+- [x] Criação e validação do banco de dados relacional no Supabase contendo todas as tabelas do sistema.
 - [x] Ajuste do fluxo de cadastro do usuário para Double Opt-in (Nome/E-mail) no frontend e validação automática por token.
 - [x] Implementação da área do candidato para configuração e monitoramento do bot de WhatsApp.
 - [x] Refatoração e modularização completa dos 5 workflows do n8n dedicados migrados para consultas nativas PostgreSQL no Supabase.
-- [x] Criação das configurações de conteinerização de produção usando Nginx ([Dockerfile.prod](file:///c:/_GUARDAR/_ATLAS/JAB/Dockerfile.prod) e [nginx.conf](file:///c:/_GUARDAR/_ATLAS/JAB/nginx.conf)).
-- [x] Versionamento e envio da branch `main` do projeto local para o repositório remoto no GitHub.
-- [x] Sincronização inicial e deploys criados no painel do Coolify para `jab-frontend` e `jab-n8n`.
-- [x] Implementação do portal e painel de empresas parceiras com CNPJ, login e cadastro manual de vagas de Jovem Aprendiz.
-- [x] Remoção temporária de restrições de login para prover acesso irrestrito e facilitar testes manuais de ponta a ponta.
-- [x] Implementação de dropdowns encadeados inteligentes de Estado e Cidade no cadastro de vagas da empresa via API do IBGE em tempo real.
-- [x] Adição do campo Nome da Empresa Contratante no formulário de novas vagas de recrutadores.
-- [x] Atualização e preenchimento detalhado do `task_plan.md` e do `manager.md` para integração com a plataforma de SaaS.
+- [x] Conexão remota bem-sucedida do servidor n8n da VPS via MCP local.
+- [x] Resolução automática e manual de 19 erros de sintaxe nos nós e queries SQL do n8n remoto da VPS.
+- [x] Associação e fixação de credenciais do PostgreSQL em todos os 10 nós de banco de dados do n8n.
+- [x] Contorno do bloqueio de rede IPv6 do Supabase configurando o Connection Pooler (Session Mode) em IPv4 na porta 5432.
+- [x] Resolução do erro de cadeia de certificados SSL auto-assinados no n8n.
+- [x] Cadastro da empresa mock (`guest_company_id`) no Supabase para viabilizar testes manuais de ponta a ponta sem violação de chaves estrangeiras.
+- [x] Normalização de respostas do n8n webhook no React (suporte a objeto único no retorno de 1 vaga).
+- [x] Ajuste no `tsconfig.app.json` para permitir variáveis declaradas mas não lidas no build de produção.
+- [x] Deploy estável e homologado do portal público em [https://jab.atlasbot.tech](https://jab.atlasbot.tech) e backend de APIs em [https://jab-api.atlasbot.tech](https://jab-api.atlasbot.tech).
 
 ### Bugs / Impedimentos:
-- **Aguardando DNS:** O deploy online em produção e o SSL do n8n e do portal dependem do apontamento DNS dos registros tipo A (`jab` e `jab-api`) na conta da Hostinger do usuário.
+- *Nenhum no momento. A infraestrutura básica e a API Backend (fluxo principal) estão 100% integradas e funcionais em produção.*
 
 ---
 
@@ -25,12 +26,9 @@
 
 ### O que foi feito:
 - [x] Criação da estrutura base de pastas e arquivos do Protocolo VLAEG.
-- [x] Resposta às perguntas de descoberta pelo usuário.
 - [x] Definição do modelo de dados inicial e regras de negócio no `gemini.md`.
 - [x] Criação dos blueprints de workflow do n8n para raspagem e limpeza de vagas.
 - [x] Criação de estilos globais CSS Vanilla e tokens da marca JAB.
 - [x] Criação dos componentes React (Header, JobCard, AdminJobCard, JobModal, AdBlock).
-- [x] Configuração e criação do Dockerfile e .dockerignore para contêiner local.
 - [x] Build bem-sucedido da imagem Docker local `jab`.
-- [x] Execução estável do contêiner Docker `jab` mapeado na porta `5173`.
 - [x] Geração e entrega do relatório de Walkthrough inicial do projeto.

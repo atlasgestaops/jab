@@ -70,7 +70,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "=SELECT id FROM vagas WHERE id = '{{ $json.id }}';"
+        "query": "=SELECT EXISTS(SELECT 1 FROM vagas WHERE id = '{{ $json.id }}') AS vaga_existe;"
       },
       "id": "postgres-check-vaga-exists",
       "name": "Verificar_Duplicado",
@@ -97,10 +97,10 @@
           "conditions": [
             {
               "id": "check-empty",
-              "leftValue": "={{ $json.id }}",
+              "leftValue": "={{ $json.vaga_existe }}",
               "operator": {
-                "type": "string",
-                "operation": "isEmpty"
+                "type": "boolean",
+                "operation": "isFalse"
               }
             }
           ],

@@ -93,9 +93,16 @@ function App() {
         const res = await fetch(`${API_URL}/vagas`);
         if (!res.ok) throw new Error("Erro na resposta da API");
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setJobs(data);
-          localStorage.setItem('jab_jobs', JSON.stringify(data));
+        let jobsData: Job[] = [];
+        if (Array.isArray(data)) {
+          jobsData = data;
+        } else if (data && typeof data === 'object' && !(data as any).success) {
+          jobsData = [data as Job];
+        }
+
+        if (jobsData.length > 0) {
+          setJobs(jobsData);
+          localStorage.setItem('jab_jobs', JSON.stringify(jobsData));
           console.log("Vagas carregadas com sucesso da API do n8n!");
           return;
         }

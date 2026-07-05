@@ -110,9 +110,13 @@ export function CompanyArea({ company, onLogout, apiUrl, showToast }: CompanyAre
       const res = await fetch(`${apiUrl}/empresas/vagas?empresa_id=${company.id}`);
       if (!res.ok) throw new Error("Erro na requisição");
       const data = await res.json();
+      let jobsData: Job[] = [];
       if (Array.isArray(data)) {
-        setCompanyJobs(data);
+        jobsData = data;
+      } else if (data && typeof data === 'object' && !(data as any).success) {
+        jobsData = [data as Job];
       }
+      setCompanyJobs(jobsData);
     } catch (e) {
       console.error("Erro ao carregar vagas da empresa", e);
       showToast("Erro ao carregar suas vagas cadastradas.");

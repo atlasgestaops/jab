@@ -88,7 +88,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst result = [];\nfor (const item of items) {\n  if (item.json.vaga_existe === false || item.json.vaga_existe === 'false') {\n    const parserData = $node['Parser_de_Vagas'].json;\n    result.push({ json: { ...parserData, vaga_nova: true } });\n  }\n}\nreturn result;"
+        "jsCode": "const items = $input.all();\nconst parserItems = $items('Parser_de_Vagas');\nconst result = [];\nfor (let i = 0; i < items.length; i++) {\n  const item = items[i];\n  if (item.json.vaga_existe === false || item.json.vaga_existe === 'false') {\n    const parserData = parserItems[i] ? parserItems[i].json : item.json;\n    result.push({ json: { ...parserData, vaga_nova: true } });\n  }\n}\nreturn result;"
       },
       "id": "c165aa21-0a6e-4775-9de8-16cb60fa236d",
       "name": "Vaga_E_Nova",

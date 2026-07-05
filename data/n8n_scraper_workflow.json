@@ -98,9 +98,10 @@
             {
               "id": "check-empty",
               "leftValue": "={{ $json.vaga_existe }}",
+              "rightValue": "false",
               "operator": {
-                "type": "boolean",
-                "operation": "isFalse"
+                "type": "string",
+                "operation": "equals"
               }
             }
           ],

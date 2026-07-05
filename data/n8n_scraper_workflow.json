@@ -109,14 +109,41 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        1450,
-        200
+        1850,
+        300
       ],
       "credentials": {
         "postgres": {
           "id": "iAAWD2FoMGyNTpQE"
         }
       }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "id": "http-request-job-details",
+      "name": "Buscar_Detalhes_da_Vaga",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst originalItems = $items('Vaga_E_Nova');\nconst result = [];\n\nfor (let i = 0; i < items.length; i++) {\n  const html = items[i].json.data;\n  const orig = originalItems[i] ? originalItems[i].json : {};\n  \n  let cleanDesc = orig.descricao || '';\n  \n  if (html) {\n    const match = html.match(/<script id=\"__NEXT_DATA__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/);\n    if (match) {\n      try {\n        const parsed = JSON.parse(match[1]);\n        const job = parsed.props.pageProps.job;\n        if (job) {\n          let descParts = [];\n          if (job.description && job.description.trim() !== '<p><br></p>') {\n            descParts.push(`<h3>Sobre a vaga / Empresa:</h3>${job.description}`);\n          }\n          if (job.responsibilities && job.responsibilities.trim() !== '<p><br></p>') {\n            descParts.push(`<h3>Responsabilidades e atribuições:</h3>${job.responsibilities}`);\n          }\n          if (job.prerequisites && job.prerequisites.trim() !== '<p><br></p>') {\n            descParts.push(`<h3>Requisitos e qualificações:</h3>${job.prerequisites}`);\n          }\n          if (job.relevantExperiences && job.relevantExperiences.trim() !== '<p><br></p>') {\n            descParts.push(`<h3>Informações adicionais / Benefícios:</h3>${job.relevantExperiences}`);\n          }\n          \n          if (descParts.length > 0) {\n            cleanDesc = descParts.join('\\n');\n          }\n        }\n      } catch (e) {\n        // Fallback\n      }\n    }\n  }\n  \n  result.push({\n    json: {\n      ...orig,\n      descricao: cleanDesc\n    }\n  });\n}\n\nreturn result;"
+      },
+      "id": "code-parser-job-details",
+      "name": "Parser_Detalhes_da_Vaga",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1650,
+        300
+      ]
     }
   ],
   "connections": {
@@ -176,6 +203,28 @@
       ]
     },
     "Vaga_E_Nova": {
+      "main": [
+        [
+          {
+            "node": "Buscar_Detalhes_da_Vaga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar_Detalhes_da_Vaga": {
+      "main": [
+        [
+          {
+            "node": "Parser_Detalhes_da_Vaga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser_Detalhes_da_Vaga": {
       "main": [
         [
           {

@@ -6,16 +6,16 @@
         "rule": {
           "interval": [
             {
-              "field": "hours",
-              "hoursInterval": 6
+              "field": "days",
+              "timeOfDay": "06:00"
             }
           ]
         }
       },
       "id": "e0e271cf-e1cf-49b0-9f1e-f3b18d2b270a",
-      "name": "Schedule Trigger",
+      "name": "Schedule_Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.1,
+      "typeVersion": 1.3,
       "position": [
         250,
         300
@@ -27,7 +27,7 @@
         "query": "SELECT * FROM fontes_busca WHERE ativa = true;"
       },
       "id": "postgres-get-fontes",
-      "name": "Ler Fontes de Busca",
+      "name": "Ler_Fontes_de_Busca",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
@@ -46,7 +46,7 @@
         "options": {}
       },
       "id": "b3e34b9d-486d-40be-ba39-813c01be4300",
-      "name": "Buscar HTML da Fonte",
+      "name": "Buscar_HTML_da_Fonte",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
@@ -56,10 +56,10 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extrai vagas do HTML retornado de forma adaptável (exemplo simplificado de parsing)\nconst html = $json.data;\nconst urlOrigem = $node[\"Buscar HTML da Fonte\"].json.url;\nconst nomeFonte = $node[\"Ler Fontes de Busca\"].json.nome_fonte;\n\nconst vagasEncontradas = [];\nconst pattern = /jovem\\s*aprendiz|aprendiz/gi;\n\nif (pattern.test(html) || true) { // Simulação aceita tudo para fins de teste local rápido\n  vagasEncontradas.push({\n    titulo: \"Jovem Aprendiz Administrativo \" + (new Date().getSeconds()),\n    empresa: \"Empresa Exemplo Local\",\n    localidade: \"São Paulo/SP\", // Foco em São Paulo para teste regional\n    descricao: \"Atuar no suporte operacional do escritório, controle de malotes, digitalização e lançamentos.\",\n    url: urlOrigem + \"/vaga-local-\" + Date.now(),\n    origem: nomeFonte,\n    data_publicacao: new Date().toISOString().split('T')[0]\n  });\n}\n\nreturn vagasEncontradas.map(v => {\n  // Gerador de MD5 compatível com Node\n  const crypto = require('crypto');\n  const id = crypto.createHash('md5').update(v.url).digest('hex');\n  return {\n    id,\n    ...v,\n    status: \"PENDENTE\",\n    data_descoberta: new Date().toISOString()\n  };\n});"
+        "jsCode": "const html = $json.data;\nconst urlOrigem = $node[\"Buscar_HTML_da_Fonte\"].json.url;\nconst nomeFonte = $node[\"Ler_Fontes_de_Busca\"].json.nome_fonte;\n\nif (!html) return [];\n\nconst match = html.match(/<script id=\"__NEXT_DATA__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/);\nif (!match) return [];\n\ntry {\n  const data = JSON.parse(match[1]);\n  const jobs = data.props.pageProps.jobs || [];\n  const pattern = /aprendiz/i;\n  const filteredJobs = jobs.filter(j => pattern.test(j.title));\n  \n  return filteredJobs.map(v => {\n    const jobUrl = `${urlOrigem.replace(/\\/$/, '')}/jobs/${v.id}`;\n    const seed = jobUrl;\n    let hash = 0;\n    for (let i = 0; i < seed.length; i++) {\n      const char = seed.charCodeAt(i);\n      hash = ((hash << 5) - hash) + char;\n      hash = hash & hash;\n    }\n    const id = 'vaga_scr_' + Math.abs(hash).toString(36) + '_' + seed.length.toString(36);\n    \n    let localidade = 'Remoto';\n    if (v.workplace && v.workplace.address) {\n      const addr = v.workplace.address;\n      localidade = `${addr.city || ''} - ${addr.stateShortName || ''}`.replace(/^ - | - $/g, '');\n    }\n    \n    return {\n      id,\n      titulo: v.title,\n      empresa: nomeFonte,\n      localidade: localidade || 'Não especificado',\n      descricao: `Vaga de Jovem Aprendiz no departamento ${v.department || 'Geral'}. Tipo: ${v.type || 'Aprendizado'}. Candidate-se no link original.`,\n      url: jobUrl,\n      origem: nomeFonte,\n      data_publicacao: new Date().toISOString().split('T')[0],\n      status: \"PENDENTE\",\n      data_descoberta: new Date().toISOString()\n    };\n  });\n} catch (e) {\n  return [];\n}"
       },
       "id": "b5e82b7b-23ac-410a-bf41-1be4aa85871f",
-      "name": "Parser de Vagas e Filtro Relevância",
+      "name": "Parser_de_Vagas",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -70,10 +70,10 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT id FROM vagas WHERE id = '{{ $json.id }}';"
+        "query": "=SELECT id FROM vagas WHERE id = '{{ $json.id }}';"
       },
       "id": "postgres-check-vaga-exists",
-      "name": "Verificar Duplicado na Triagem",
+      "name": "Verificar_Duplicado",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
@@ -89,30 +89,24 @@
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "type": "mix"
-          },
+          "combinator": "and",
           "conditions": [
             {
               "id": "check-empty",
               "leftValue": "={{ $json.id }}",
-              "rightValue": "",
               "operator": {
-                "type": "string",
-                "operation": "isEmpty"
+                "operation": "empty",
+                "type": "string"
               }
             }
-          ],
-          "combinator": "and"
+          ]
         },
         "options": {}
       },
       "id": "c165aa21-0a6e-4775-9de8-16cb60fa236d",
-      "name": "Vaga É Nova?",
+      "name": "Vaga_E_Nova",
       "type": "n8n-nodes-base.filter",
-      "typeVersion": 2,
+      "typeVersion": 2.3,
       "position": [
         1250,
         300
@@ -121,10 +115,10 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, data_publicacao, data_descoberta) VALUES ('{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.id }}', '{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.titulo }}', '{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.empresa }}', '{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.localidade }}', '{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.descricao }}', '{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.url }}', '{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.origem }}', 'PENDENTE', '{{ $node[\"Parser de Vagas e Filtro Relevância\"].json.data_publicacao }}', NOW());"
+        "query": "=INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, data_publicacao, data_descoberta) VALUES ('{{ $node[\"Parser_de_Vagas\"].json.id }}', '{{ $node[\"Parser_de_Vagas\"].json.titulo }}', '{{ $node[\"Parser_de_Vagas\"].json.empresa }}', '{{ $node[\"Parser_de_Vagas\"].json.localidade }}', '{{ $node[\"Parser_de_Vagas\"].json.descricao }}', '{{ $node[\"Parser_de_Vagas\"].json.url }}', '{{ $node[\"Parser_de_Vagas\"].json.origem }}', 'PENDENTE', '{{ $node[\"Parser_de_Vagas\"].json.data_publicacao }}', NOW());"
       },
       "id": "postgres-insert-vaga",
-      "name": "Inserir Vaga Pendente",
+      "name": "Inserir_Vaga_Pendente",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
@@ -139,66 +133,66 @@
     }
   ],
   "connections": {
-    "Schedule Trigger": {
+    "Schedule_Trigger": {
       "main": [
         [
           {
-            "node": "Ler Fontes de Busca",
+            "node": "Ler_Fontes_de_Busca",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Ler Fontes de Busca": {
+    "Ler_Fontes_de_Busca": {
       "main": [
         [
           {
-            "node": "Buscar HTML da Fonte",
+            "node": "Buscar_HTML_da_Fonte",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Buscar HTML da Fonte": {
+    "Buscar_HTML_da_Fonte": {
       "main": [
         [
           {
-            "node": "Parser de Vagas e Filtro Relevância",
+            "node": "Parser_de_Vagas",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parser de Vagas e Filtro Relevância": {
+    "Parser_de_Vagas": {
       "main": [
         [
           {
-            "node": "Verificar Duplicado na Triagem",
+            "node": "Verificar_Duplicado",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Verificar Duplicado na Triagem": {
+    "Verificar_Duplicado": {
       "main": [
         [
           {
-            "node": "Vaga É Nova?",
+            "node": "Vaga_E_Nova",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Vaga É Nova?": {
+    "Vaga_E_Nova": {
       "main": [
         [
           {
-            "node": "Inserir Vaga Pendente",
+            "node": "Inserir_Vaga_Pendente",
             "type": "main",
             "index": 0
           }
@@ -208,6 +202,5 @@
     }
   },
   "settings": {},
-  "active": true,
-  "id": "102"
+  "active": true
 }

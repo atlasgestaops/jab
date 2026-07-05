@@ -89,24 +89,29 @@
     {
       "parameters": {
         "conditions": {
-          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "mix"
+          },
           "conditions": [
             {
               "id": "check-empty",
               "leftValue": "={{ $json.id }}",
               "operator": {
-                "operation": "empty",
-                "type": "string"
+                "type": "string",
+                "operation": "isEmpty"
               }
             }
-          ]
+          ],
+          "combinator": "and"
         },
         "options": {}
       },
       "id": "c165aa21-0a6e-4775-9de8-16cb60fa236d",
       "name": "Vaga_E_Nova",
       "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.3,
+      "typeVersion": 2,
       "position": [
         1250,
         300

@@ -35,8 +35,8 @@
         300
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -56,7 +56,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const html = $json.data;\nconst urlOrigem = $node[\"Buscar_HTML_da_Fonte\"].json.url;\nconst nomeFonte = $node[\"Ler_Fontes_de_Busca\"].json.nome_fonte;\n\nif (!html) return [];\n\nconst match = html.match(/<script id=\"__NEXT_DATA__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/);\nif (!match) return [];\n\ntry {\n  const data = JSON.parse(match[1]);\n  const jobs = data.props.pageProps.jobs || [];\n  const pattern = /aprendiz/i;\n  const filteredJobs = jobs.filter(j => pattern.test(j.title));\n  \n  return filteredJobs.map(v => {\n    const jobUrl = `${urlOrigem.replace(/\\/$/, '')}/jobs/${v.id}`;\n    const seed = jobUrl;\n    let hash = 0;\n    for (let i = 0; i < seed.length; i++) {\n      const char = seed.charCodeAt(i);\n      hash = ((hash << 5) - hash) + char;\n      hash = hash & hash;\n    }\n    const id = 'vaga_scr_' + Math.abs(hash).toString(36) + '_' + seed.length.toString(36);\n    \n    let localidade = 'Remoto';\n    if (v.workplace && v.workplace.address) {\n      const addr = v.workplace.address;\n      localidade = `${addr.city || ''} - ${addr.stateShortName || ''}`.replace(/^ - | - $/g, '');\n    }\n    \n    return {\n      id,\n      titulo: v.title,\n      empresa: nomeFonte,\n      localidade: localidade || 'Não especificado',\n      descricao: `Vaga de Jovem Aprendiz no departamento ${v.department || 'Geral'}. Tipo: ${v.type || 'Aprendizado'}. Candidate-se no link original.`,\n      url: jobUrl,\n      origem: nomeFonte,\n      data_publicacao: new Date().toISOString().split('T')[0],\n      status: \"PENDENTE\",\n      data_descoberta: new Date().toISOString()\n    };\n  });\n} catch (e) {\n  return [];\n}"
+        "jsCode": "const html = $json.data;\nconst urlOrigem = $node[\"Ler_Fontes_de_Busca\"].json.url;\nconst nomeFonte = $node[\"Ler_Fontes_de_Busca\"].json.nome_fonte;\n\nif (!html) return [];\n\nconst match = html.match(/<script id=\"__NEXT_DATA__\" type=\"application\\/json\">([\\s\\S]*?)<\\/script>/);\nif (!match) return [];\n\ntry {\n  const data = JSON.parse(match[1]);\n  const jobs = data.props.pageProps.jobs || [];\n  const pattern = /aprendiz/i;\n  const filteredJobs = jobs.filter(j => pattern.test(j.title));\n  \n  return filteredJobs.map(v => {\n    const jobUrl = `${urlOrigem.replace(/\\/$/, '')}/jobs/${v.id}`;\n    const seed = jobUrl;\n    let hash = 0;\n    for (let i = 0; i < seed.length; i++) {\n      const char = seed.charCodeAt(i);\n      hash = ((hash << 5) - hash) + char;\n      hash = hash & hash;\n    }\n    const id = 'vaga_scr_' + Math.abs(hash).toString(36) + '_' + seed.length.toString(36);\n    \n    let localidade = 'Remoto';\n    if (v.workplace && v.workplace.address) {\n      const addr = v.workplace.address;\n      localidade = `${addr.city || ''} - ${addr.stateShortName || ''}`.replace(/^ - | - $/g, '');\n    }\n    \n    return {\n      id,\n      titulo: v.title,\n      empresa: nomeFonte,\n      localidade: localidade || 'Não especificado',\n      descricao: `Vaga de Jovem Aprendiz no departamento ${v.department || 'Geral'}. Tipo: ${v.type || 'Aprendizado'}. Candidate-se no link original.`,\n      url: jobUrl,\n      origem: nomeFonte,\n      data_publicacao: new Date().toISOString().split('T')[0],\n      status: \"PENDENTE\",\n      data_descoberta: new Date().toISOString()\n    };\n  });\n} catch (e) {\n  return [];\n}"
       },
       "id": "b5e82b7b-23ac-410a-bf41-1be4aa85871f",
       "name": "Parser_de_Vagas",
@@ -81,8 +81,8 @@
         300
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     },
@@ -126,8 +126,8 @@
         200
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     }

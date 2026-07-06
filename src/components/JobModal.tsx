@@ -42,7 +42,7 @@ export const JobModal: React.FC<JobModalProps> = ({ job, onClose }) => {
 
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>Descrição da Vaga e Atividades</h3>
-            <p style={styles.sectionText}>{job.descricao}</p>
+            <div style={styles.sectionText} dangerouslySetInnerHTML={{ __html: job.descricao }} />
           </div>
         </div>
 

@@ -67,7 +67,7 @@ export const JobDetail: React.FC<JobDetailProps> = ({ job, onBack, onSaveJob, is
 
           <div style={styles.descriptionSection}>
             <h2 style={styles.sectionTitle}>Descrição da Vaga</h2>
-            <div style={styles.sectionText}>{job.descricao}</div>
+            <div style={styles.sectionText} dangerouslySetInnerHTML={{ __html: job.descricao }} />
           </div>
 
           <div style={styles.applySection}>

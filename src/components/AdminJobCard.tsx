@@ -24,6 +24,13 @@ export const AdminJobCard: React.FC<AdminJobCardProps> = ({ job, onApprove, onRe
     }
   };
 
+  const stripHtml = (htmlStr: string) => {
+    if (!htmlStr) return '';
+    return htmlStr.replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ');
+  };
+
+  const cleanDescription = stripHtml(job.descricao);
+
   return (
     <article className="admin-job-card fade-in">
       <div style={styles.header}>
@@ -37,9 +44,9 @@ export const AdminJobCard: React.FC<AdminJobCardProps> = ({ job, onApprove, onRe
 
       <div style={styles.body}>
         <p style={styles.description}>
-          {job.descricao.length > 220 
-            ? `${job.descricao.substring(0, 220)}...` 
-            : job.descricao
+          {cleanDescription.length > 220 
+            ? `${cleanDescription.substring(0, 220)}...` 
+            : cleanDescription
           }
         </p>
         <div style={styles.discoveryInfo}>

@@ -34,8 +34,8 @@
         300
       ],
       "credentials": {
-        "database": {
-          "id": "supabase-postgres-credentials"
+        "postgres": {
+          "id": "iAAWD2FoMGyNTpQE"
         }
       }
     }
@@ -57,5 +57,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "id": "103"
+  "id": "5j19c9HqtyR4qQjd"
 }

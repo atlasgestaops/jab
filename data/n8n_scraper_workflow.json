@@ -43,7 +43,10 @@
     {
       "parameters": {
         "url": "={{ $json.url }}",
-        "options": {}
+        "options": {
+          "batchSize": 1,
+          "batchInterval": 5000
+        }
       },
       "id": "b3e34b9d-486d-40be-ba39-813c01be4300",
       "name": "Buscar_HTML_da_Fonte",

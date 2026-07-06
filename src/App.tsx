@@ -1102,9 +1102,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 500,
   },
   list: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 'var(--space-sm)',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: 'var(--space-md)',
   },
   emptyState: {
     backgroundColor: 'var(--color-white)',

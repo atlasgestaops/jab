@@ -270,14 +270,15 @@ button {
   border-radius: var(--radius-md);
   padding: var(--space-md);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   gap: var(--space-md);
   box-shadow: var(--shadow-sm);
   transition: var(--transition-normal);
   cursor: pointer;
   text-align: left;
+  min-height: 250px;
 }
 
 .job-card:hover {
@@ -290,7 +291,25 @@ button {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  flex-shrink: 0;
+  margin-top: auto;
+  border-top: 1px solid var(--color-gray-light);
+  padding-top: var(--space-sm);
+  width: 100%;
+}
+
+.job-card-actions button {
+  flex: 1;
+  justify-content: center;
+  text-align: center;
+}
+
+.job-card-actions a {
+  flex: 1;
+  display: flex;
+}
+
+.job-card-actions a button {
+  width: 100%;
 }
 
 /* Card Administrativo */

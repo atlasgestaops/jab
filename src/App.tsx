@@ -8,6 +8,7 @@ import { Guide } from './components/Guide';
 import { AdBlock } from './components/AdBlock';
 import { CandidateArea } from './components/CandidateArea';
 import { CompanyArea } from './components/CompanyArea';
+import { Linktree } from './components/Linktree';
 import initialJobs from './data/vagas_mock.json';
 import './App.css';
 
@@ -21,7 +22,7 @@ export interface CandidateApplication {
 
 function App() {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [currentRoute, setCurrentRoute] = useState<'portal' | 'admin' | 'vaga' | 'guide' | 'profile' | 'company-panel'>('portal');
+  const [currentRoute, setCurrentRoute] = useState<'portal' | 'admin' | 'vaga' | 'guide' | 'profile' | 'company-panel' | 'linktree'>('portal');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   
   // Estado das candidaturas salvas pelo candidato
@@ -173,6 +174,12 @@ function App() {
     const token = urlParams.get('confirmar');
     if (token) {
       confirmEmail(token);
+    }
+
+    // Verificar se está acessando a página do Linktree
+    const pathname = window.location.pathname.replace(/\/$/, '');
+    if (pathname === '/linktree' || urlParams.get('page') === 'linktree') {
+      setCurrentRoute('linktree');
     }
   }, []);
 
@@ -550,6 +557,26 @@ function App() {
                           
     return matchTerm && matchLocation;
   });
+
+  if (currentRoute === 'linktree') {
+    return (
+      <div style={{ ...styles.app, backgroundColor: 'var(--color-snow)', minHeight: '100vh', padding: 0 }}>
+        <Linktree 
+          onNavigate={(route) => {
+            setCurrentRoute(route);
+            window.scrollTo({ top: 0 });
+          }}
+        />
+        {toastMessage && (
+          <div style={styles.toastContainer} className="fade-in">
+            <div style={styles.toast}>
+              <span>{toastMessage}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div style={styles.app}>

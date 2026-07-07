@@ -49,15 +49,10 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onOpenDetails, onSaveJob,
             <span style={styles.metaText}>{job.localidade}</span>
           </div>
 
-          <div style={styles.metaItem}>
-            <span style={styles.metaIcon}>💼</span>
-            <span style={styles.metaText}>Jovem Aprendiz</span>
-          </div>
-
           {job.data_publicacao && (
             <div style={styles.metaItem}>
               <span style={styles.metaIcon}>📅</span>
-              <span style={styles.metaText}>Publicada em {formatDate(job.data_publicacao)}</span>
+              <span style={styles.metaText}>{formatDate(job.data_publicacao)}</span>
             </div>
           )}
         </div>

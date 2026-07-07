@@ -52,14 +52,10 @@ export const JobDetail: React.FC<JobDetailProps> = ({ job, onBack, onSaveJob, is
                 <span>{isRemote ? '💻' : '📍'}</span>
                 <span>{job.localidade}</span>
               </div>
-              <div style={styles.metaItem}>
-                <span>💼</span>
-                <span>Jovem Aprendiz</span>
-              </div>
               {job.data_publicacao && (
                 <div style={styles.metaItem}>
                   <span>📅</span>
-                  <span>Publicada em {formatDate(job.data_publicacao)}</span>
+                  <span>{formatDate(job.data_publicacao)}</span>
                 </div>
               )}
             </div>

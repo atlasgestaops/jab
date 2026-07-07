@@ -687,43 +687,6 @@ function App() {
                 </div>
               )}
             </div>
-
-            {/* Sidebar Lateral */}
-            <aside style={styles.sidebar}>
-              {/* Box de Alertas de Vagas (Double Opt-in) */}
-              <div className="whatsapp-subscribe-box">
-                <h3 className="whatsapp-title">Alertas de Vagas 🟢</h3>
-                <p className="whatsapp-text">
-                  Cadastre seu e-mail para ativar e configurar alertas personalizados de vagas no seu WhatsApp de forma 100% segura.
-                </p>
-                <form onSubmit={handleSubscribeForm} className="whatsapp-form">
-                  <input 
-                    type="text" 
-                    placeholder="Seu nome..." 
-                    value={subName}
-                    onChange={(e) => setSubName(e.target.value)}
-                    required
-                    className="whatsapp-input"
-                  />
-                  <input 
-                    type="email" 
-                    placeholder="seu-email@dominio.com" 
-                    value={subEmail}
-                    onChange={(e) => setSubEmail(e.target.value)}
-                    required
-                    className="whatsapp-input"
-                  />
-                  <button type="submit" disabled={submittingSub} className="whatsapp-submit-btn">
-                    {submittingSub ? 'Enviando link...' : 'Começar Configuração'}
-                  </button>
-                </form>
-              </div>
-
-
-
-              {/* AdSense Sidebar Banner */}
-              <AdBlock type="sidebar" />
-            </aside>
           </section>
         </main>
       )}

@@ -230,7 +230,7 @@ button {
 /* Grid Principal (Duas Colunas) */
 .main-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr;
   gap: var(--space-md);
   align-items: start;
 }

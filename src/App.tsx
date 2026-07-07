@@ -719,20 +719,7 @@ function App() {
                 </form>
               </div>
 
-              {/* Box Informativo da Lei do Jovem Aprendiz */}
-              <div style={styles.infoBox}>
-                <h3 style={styles.infoTitle}>Direito do Aprendiz 🇧🇷</h3>
-                <p style={styles.infoText}>
-                  A **Lei da Aprendizagem (Lei 10.097/2000)** garante ao jovem de 14 a 24 anos:
-                </p>
-                <ul style={styles.infoList}>
-                  <li>✓ Carteira assinada (regime CLT).</li>
-                  <li>✓ Salário mínimo hora proporcional.</li>
-                  <li>✓ Jornada máxima de 6h (estudantes).</li>
-                  <li>✓ Curso de capacitação teórica pago pela empresa.</li>
-                  <li>✓ FGTS recolhido a alíquota de 2%.</li>
-                </ul>
-              </div>
+
 
               {/* AdSense Sidebar Banner */}
               <AdBlock type="sidebar" />

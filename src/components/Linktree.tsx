@@ -47,7 +47,7 @@ export const Linktree: React.FC<LinktreeProps> = ({ onNavigate, onOpenAlertsModa
         {/* Logo and Header */}
         <header className="linktree-header">
           <img 
-            src="https://jovemaprendizbrasil.com.br/wp-content/uploads/2023/04/logo_jab_colorido.png" 
+            src="/identidade/logo_jab_colorido.png" 
             alt="JAB Logo" 
             className="linktree-logo"
           />

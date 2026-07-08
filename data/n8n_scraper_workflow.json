@@ -145,6 +145,46 @@
     },
     {
       "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "sendQueryParameters": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "SUA_CHAVE_API_GEMINI_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Você é um redator de RH especialista em vagas de Jovem Aprendiz. Reescreva a descrição da vaga fornecida para torná-la atraente, original (para passar no filtro do Google AdSense e melhorar o SEO do JAB) e profissional.\\n\\nRegras:\\n1. Mantenha os requisitos reais, qualificações e benefícios idênticos aos originais para não confundir o candidato.\\n2. Reescreva a introdução ('Sobre a vaga') e a apresentação da empresa com suas próprias palavras.\\n3. Formate a saída estritamente em HTML limpo, usando apenas tags <h3>, <p>, <ul>, <li>. Não adicione cabeçalhos markdown ou blocos ```html.\\n4. Retorne a resposta em formato JSON contendo a chave \\\"descricao_final\\\".\\n\\nVaga original:\\n\" + $json.descricao\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"responseMimeType\": \"application/json\",\n    \"responseSchema\": {\n      \"type\": \"OBJECT\",\n      \"properties\": {\n        \"descricao_final\": {\n          \"type\": \"STRING\"\n        }\n      },\n      \"required\": [\n        \"descricao_final\"\n      ]\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "gemini-ai-rewriter",
+      "name": "Reescrever_Descricao_IA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2050,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst orig = $node['Parser_Detalhes_da_Vaga'].json;\nlet cleanDesc = orig.descricao;\n\ntry {\n  const text = response.candidates[0].content.parts[0].text;\n  const parsed = JSON.parse(text);\n  if (parsed.descricao_final) {\n    cleanDesc = parsed.descricao_final;\n  }\n} catch (e) {\n  console.warn(\"Erro ao processar IA, usando descrição original de fallback\", e);\n}\n\nreturn {\n  json: {\n    ...orig,\n    descricao: cleanDesc\n  }\n};"
+      },
+      "id": "code-parser-gemini-response",
+      "name": "Parser_Resposta_IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2250,
+        300
+      ]
+    },
+    {
+      "parameters": {
         "operation": "executeQuery",
         "query": "=INSERT INTO vagas (id, titulo, empresa, localidade, descricao, url, origem, status, data_publicacao, data_descoberta) VALUES ('{{ $json.id }}', '{{ $json.titulo }}', '{{ $json.empresa }}', '{{ $json.localidade }}', '{{ $json.descricao }}', '{{ $json.url }}', '{{ $json.origem }}', 'PENDENTE', '{{ $json.data_publicacao }}', NOW());"
       },
@@ -153,7 +193,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.2,
       "position": [
-        2050,
+        2450,
         300
       ],
       "credentials": {
@@ -173,7 +213,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2250,
+        2650,
         300
       ]
     }
@@ -269,6 +309,28 @@
       ]
     },
     "Parser_Detalhes_da_Vaga": {
+      "main": [
+        [
+          {
+            "node": "Reescrever_Descricao_IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reescrever_Descricao_IA": {
+      "main": [
+        [
+          {
+            "node": "Parser_Resposta_IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser_Resposta_IA": {
       "main": [
         [
           {

@@ -24,6 +24,7 @@ function App() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [currentRoute, setCurrentRoute] = useState<'portal' | 'admin' | 'vaga' | 'guide' | 'profile' | 'company-panel' | 'linktree'>('portal');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [pendingJobId, setPendingJobId] = useState<string | null>(null);
   
   // Estado das candidaturas salvas pelo candidato
   const [applications, setApplications] = useState<CandidateApplication[]>([]);
@@ -176,12 +177,66 @@ function App() {
       confirmEmail(token);
     }
 
-    // Verificar se está acessando a página do Linktree
+    // Verificar se está acessando a página do Linktree, vaga específica ou outras rotas
     const pathname = window.location.pathname.replace(/\/$/, '');
+    const pathParts = pathname.split('/');
     if (pathname === '/linktree' || urlParams.get('page') === 'linktree') {
       setCurrentRoute('linktree');
+    } else if (pathParts[1] === 'vaga' && pathParts[2]) {
+      setPendingJobId(pathParts[2]);
+    } else if (pathname === '/profile') {
+      setCurrentRoute('profile');
+    } else if (pathname === '/admin') {
+      setCurrentRoute('admin');
+    } else if (pathname === '/guide') {
+      setCurrentRoute('guide');
     }
   }, []);
+
+  // Sincronizar rota ao navegar pelos botões Avançar/Voltar do navegador
+  useEffect(() => {
+    const handlePopState = () => {
+      const pathname = window.location.pathname.replace(/\/$/, '');
+      const pathParts = pathname.split('/');
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      if (pathname === '/linktree' || urlParams.get('page') === 'linktree') {
+        setCurrentRoute('linktree');
+      } else if (pathParts[1] === 'vaga' && pathParts[2]) {
+        const jobId = pathParts[2];
+        const foundJob = jobs.find(j => j.id === jobId);
+        if (foundJob) {
+          setSelectedJob(foundJob);
+          setCurrentRoute('vaga');
+        } else {
+          setPendingJobId(jobId);
+        }
+      } else if (pathname === '/profile') {
+        setCurrentRoute('profile');
+      } else if (pathname === '/admin') {
+        setCurrentRoute('admin');
+      } else if (pathname === '/guide') {
+        setCurrentRoute('guide');
+      } else {
+        setCurrentRoute('portal');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [jobs]);
+
+  // Resolver ID de vaga pendente após carregar vagas da API/Mock
+  useEffect(() => {
+    if (pendingJobId && jobs.length > 0) {
+      const foundJob = jobs.find(j => j.id === pendingJobId);
+      if (foundJob) {
+        setSelectedJob(foundJob);
+        setCurrentRoute('vaga');
+        setPendingJobId(null);
+      }
+    }
+  }, [pendingJobId, jobs]);
 
   // Carregar fontes de busca para o administrador
   useEffect(() => {
@@ -539,6 +594,7 @@ function App() {
   const handleOpenDetails = (job: Job) => {
     setSelectedJob(job);
     setCurrentRoute('vaga');
+    window.history.pushState({ jobId: job.id }, "", `/vaga/${job.id}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -564,6 +620,12 @@ function App() {
         <Linktree 
           onNavigate={(route) => {
             setCurrentRoute(route);
+            let path = '/';
+            if (route === 'linktree') path = '/linktree';
+            else if (route === 'profile') path = '/profile';
+            else if (route === 'admin') path = '/admin';
+            else if (route === 'guide') path = '/guide';
+            window.history.pushState({}, "", path);
             window.scrollTo({ top: 0 });
           }}
         />
@@ -581,9 +643,16 @@ function App() {
   return (
     <div style={styles.app}>
       <Header 
-        currentRoute={currentRoute === 'vaga' ? 'portal' : currentRoute} 
+        currentRoute={((currentRoute as string) === 'vaga' || (currentRoute as string) === 'linktree' ? 'portal' : currentRoute) as any} 
         onRouteChange={(route) => {
           setCurrentRoute(route);
+          let path = '/';
+          const r = route as string;
+          if (r === 'linktree') path = '/linktree';
+          else if (r === 'profile') path = '/profile';
+          else if (r === 'admin') path = '/admin';
+          else if (r === 'guide') path = '/guide';
+          window.history.pushState({}, "", path);
           window.scrollTo({ top: 0 });
         }} 
         pendingCount={pendingJobs.length}
@@ -702,6 +771,7 @@ function App() {
           job={selectedJob} 
           onBack={() => {
             setCurrentRoute('portal');
+            window.history.pushState({}, "", "/");
             window.scrollTo({ top: 0 });
           }} 
           onSaveJob={handleSaveJob}

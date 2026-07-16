@@ -18,6 +18,7 @@
   - Visualizar vagas `PENDENTES`.
   - Clicar no link para abrir a vaga original.
   - Aprovar (status ➔ `VALIDADO`) ou rejeitar (status ➔ `REJEITADO`).
+  - Visualizar vagas `ATIVAS` (`VALIDADO` / `PUBLICADO`) e removê-las (alterando para `REJEITADO` para arquivá-las e retirá-las do portal) a qualquer momento.
 
 ## 📊 Modelo de Dados (Database Schema)
 

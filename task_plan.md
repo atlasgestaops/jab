@@ -46,9 +46,9 @@
 
 ### Fase 5 — Deploy & Handover (Somente sob demanda explícita)
 - [x] **1. Migração do portal e banco para ambiente produtivo (Supabase)** | Responsável: Dev | Tipo: Checkbox
-- [x] **2. Configuração de DNS e certificado SSL** | Responsável: Dev | Tipo: Checkbox -> *Aguardando o apontamento das zonas de DNS tipo A pela Hostinger para `jab.atlasbot.tech` e `jab-api.atlasbot.tech` direcionando para o IP da VPS `187.77.193.79`.*
+- [x] **2. Configuração de DNS e certificado SSL** | Responsável: Dev | Tipo: Checkbox -> *DNS ativado com sucesso e certificado SSL configurado via Traefik no orquestrador do Coolify para as URLs https://jab.atlasbot.tech e https://jab-api.atlasbot.tech.*
 - [x] **3. Configuração de agendamento (Cron / Scheduler do Crawler)** | Responsável: Dev | Tipo: Checkbox
-- [ ] **4. Monitoramento ativo de falhas e logs** | Responsável: Dev | Tipo: Link -> *Será monitorado diretamente na URL da API de produção do n8n `https://jab-api.atlasbot.tech` assim que o DNS for ativado.*
-- [ ] **5. Manual de operação (POP) da automação e portal** | Responsável: Dev | Tipo: Upload -> *Manual técnico e guias de operação consolidados em [README.md](file:///c:/_GUARDAR/_ATLAS/JAB/README.md) e [ARCHITECTURE.md](file:///c:/_GUARDAR/_ATLAS/JAB/ARCHITECTURE.md).*
+- [x] **4. Monitoramento ativo de falhas e logs** | Responsável: Dev | Tipo: Link -> *Ativado o monitoramento em tempo real nos logs do n8n remoto na VPS. Configurado o timeout (30s) e tratamento de erros (onError: continue) para garantir a robustez contra travamentos.*
+- [x] **5. Manual de operação (POP) da automação e portal** | Responsável: Dev | Tipo: Upload -> *Manual técnico e fluxogramas consolidados e atualizados em [README.md](file:///c:/_GUARDAR/_ATLAS/JAB/README.md), [ARCHITECTURE.md](file:///c:/_GUARDAR/_ATLAS/JAB/ARCHITECTURE.md) e o log de modificações em [walkthrough.md](file:///c:/_GUARDAR/_ATLAS/JAB/walkthrough.md).*
 - [ ] **6. Onboarding/Treinamento do cliente** | Responsável: Gestor | Tipo: Checkbox
 - [ ] **7. Definição do suporte e check-in de 30 dias** | Responsável: CS / Gestor | Tipo: Checkbox

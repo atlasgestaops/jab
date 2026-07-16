@@ -12,6 +12,7 @@ export interface Job {
   data_publicacao?: string;
   data_fechamento?: string;
   data_descoberta: string;
+  data_validacao?: string;
 }
 
 interface JobCardProps {

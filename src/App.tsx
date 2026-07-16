@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { JobCard } from './components/JobCard';
 import type { Job } from './components/JobCard';
 import { AdminJobCard } from './components/AdminJobCard';
+import { AdminActiveJobCard } from './components/AdminActiveJobCard';
 import { JobDetail } from './components/JobDetail';
 import { Guide } from './components/Guide';
 import { AdBlock } from './components/AdBlock';
@@ -77,7 +78,7 @@ function App() {
   const [companyLoginInput, setCompanyLoginInput] = useState('');
 
   // Estados para Gerenciamento de Fontes de Busca (Admin)
-  const [adminTab, setAdminTab] = useState<'triagem' | 'fontes'>('triagem');
+  const [adminTab, setAdminTab] = useState<'triagem' | 'ativas' | 'fontes'>('triagem');
   const [sources, setSources] = useState<{ id: number; nome_fonte: string; url: string; ativa: boolean }[]>([]);
   const [newSourceName, setNewSourceName] = useState('');
   const [newSourceUrl, setNewSourceUrl] = useState('');
@@ -799,6 +800,12 @@ function App() {
                   Triagem de Vagas ({pendingJobs.length})
                 </button>
                 <button 
+                  style={adminTab === 'ativas' ? styles.adminNavBtnActive : styles.adminNavBtn}
+                  onClick={() => setAdminTab('ativas')}
+                >
+                  Vagas Ativas ({validatedJobs.length})
+                </button>
+                <button 
                   style={adminTab === 'fontes' ? styles.adminNavBtnActive : styles.adminNavBtn}
                   onClick={() => setAdminTab('fontes')}
                 >
@@ -841,6 +848,38 @@ function App() {
                         job={job}
                         onApprove={handleApprove}
                         onReject={handleReject}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {adminTab === 'ativas' && (
+              <>
+                <div style={styles.adminSectionHeader}>
+                  <h2 style={styles.sectionTitle}>
+                    Vagas Ativas no Portal
+                    <span style={styles.pendingCountBadge}>{validatedJobs.length}</span>
+                  </h2>
+                  <div style={styles.adminTip}>
+                    💡 <em>Dica: Ao excluir uma vaga ativa, ela sairá do ar imediatamente no portal e será arquivada.</em>
+                  </div>
+                </div>
+
+                {validatedJobs.length === 0 ? (
+                  <div style={styles.emptyAdminState}>
+                    <span style={styles.emptyAdminIcon}>📭</span>
+                    <h3>Nenhuma vaga ativa!</h3>
+                    <p>Não há nenhuma vaga publicada no portal neste momento.</p>
+                  </div>
+                ) : (
+                  <div style={styles.adminGrid}>
+                    {validatedJobs.map(job => (
+                      <AdminActiveJobCard 
+                        key={job.id} 
+                        job={job}
+                        onDelete={handleReject}
                       />
                     ))}
                   </div>
